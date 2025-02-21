@@ -1,0 +1,71 @@
+.today-portrait-card {
+    width: 100%;
+    max-width: 350px;
+    min-height: 50rem; /* or whatever suits your 16:9 portrait ratio */
+    border-radius: 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden; /* If your image is bigger than the card */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    backdrop-filter: blur(4px); /* optional glass effect if you like */
+    scale: auto;
+  }
+
+
+  
+  .month-banner {
+    font-size: 2.4rem;
+    margin-top: 20px;
+    margin-bottom: 1rem;
+    background-color: rgba(0,0,0,0.4);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+  }
+  
+  .date-info {
+    margin-top: 3rem;
+    background-color: rgba(255, 255, 255, 0);
+  }
+  
+  .big-date {
+    font-family: "Beau Rivage", serif;
+    font-size: 15rem;
+    margin: 0.5rem 0;
+  }
+  
+  .quote-section {
+    margin-top: 2rem;
+    background-color: rgba(255, 255, 255, 0.397);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    color: black;
+    max-width: 80%;
+    font-size: 1.4rem;
+  }
+
+  .quote-author {
+    padding-left: 60%;
+    font-size: 10px;
+  }
+  
+  .dayt {
+    scale: 80%;
+    font-size: 2.5rem;
+    color: rgb(255, 255, 255);
+    font-weight: bolder;
+    margin-top: -6rem;
+    background-color: rgba(0, 0, 0, 0.168);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    
+  }
+
+  .yeart {
+    font-size: 1.6rem;
+    font-weight: normal;    
+  }

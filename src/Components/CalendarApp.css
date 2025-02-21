@@ -1,0 +1,428 @@
+.wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+.fab {
+    position: fixed;
+    bottom: 20px;  /* Distance from bottom */
+    right: 20px;  /* Distance from right */
+    width: 60px;  /* Button size */
+    height: 60px;
+    background-color: #6200ea;  /* Nice purple shade */
+    color: white;
+    border-radius: 50%;  /* Make it round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);  /* Add shadow */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    z-index: 9999;
+    display: none;
+}
+
+/* Hover effect */
+.fab:hover {
+    background-color: #3700b3;
+    transform: scale(1.1);
+}
+
+
+/* The separate background div */
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    
+}
+
+/* Apply blur only to the background */
+.landscape-blur {
+    filter: blur(10px); /* Adjust as needed */
+    transition: filter 0.3s ease-in-out;
+
+}
+
+/* Keep content clear */
+.content {
+    position: relative;
+    z-index: 1; /* Make sure the content is above the blurred background */
+}
+
+
+
+
+.landscape-blur {
+    filter: blur(10px); /* Adjust blur effect */
+    transition: filter 0.3s ease-in-out;
+    z-index: -1;
+    scale: 110%;
+}
+
+
+.wrapper.landscape-blur{
+    backdrop-filter: blur(0px);
+}
+
+.toggle-btn {
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: none;
+}
+
+
+.calendar-app {
+    width: 40%;
+    max-width: 400px;
+    min-height: 40rem;
+    padding: 2rem;
+    border-radius: 3rem;
+    border: 2px solid rgba(145, 145, 145, 0.432);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    background: rgba(0, 0, 0, 0.489);
+    backdrop-filter: blur(50px) saturate(400%) !important;
+    
+    margin-right: 20px;
+
+}
+
+.today-app {
+    
+    width: 40%;
+    max-width: 350px;
+    min-height: 50rem;
+    border-radius: 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden; /* If your image is bigger than the card */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border: 2px solid rgba(145, 145, 145, 0.432);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    box-shadow: rgba(0, 0, 0, 0.663) 0px 0px 20px 10px;
+
+}
+
+
+
+
+.calendar {
+    width: 40%;
+}
+
+.heading {
+    font-family: "Caveat", sans-serif;
+    font-size: clamp(7rem, 1cqi, 9rem);
+    color: #fff;
+    letter-spacing: 0;
+    padding-left: 0.rem;
+    margin-top: -20px;
+
+}
+
+.navigate-date {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 1rem;
+    margin: 3.5rem 0;
+    
+    
+}
+
+.navigate-date h2 {
+    font-size: clamp(1.5rem, 1.5cqi, 2.5rem);
+    color: #bbb;
+    padding-left: 1.3rem;
+    white-space: nowrap;
+    margin-right: auto;
+}
+
+
+.buttons{
+    display: flex;
+    column-gap: 1rem;
+    margin-left: 0.3rem;
+    margin-top: 1.5rem;
+}
+
+.year {
+    margin-top: 1rem;
+    margin-left: 0.3rem;
+    margin-bottom: -3rem;
+    font-family: "Comfortaa", sans-serif;
+    font-size: clamp(2rem, 1.5cqi, 3rem);
+    color: #ffffffaf;
+}
+
+.buttons i {
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: #00000050;
+    border-radius: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: #c7c7c7;
+    cursor: pointer;
+
+}
+
+.weekdays {
+    width: 100%;
+    display: flex;
+    margin: 3rem 0;
+    margin-bottom: 1rem;
+}
+
+.weekdays span {
+    width: calc(100% / 7);
+    font-size: clamp(1rem, .8cqi, 1.3rem);
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #78879e;
+    letter-spacing: .1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.days {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.days span {
+    font-size: 170%;
+    width: calc(100% / 7);
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffffd2;
+    cursor: pointer;
+    text-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.current-date {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 30%;
+    box-shadow: 0 0 1rem 0.2rem rgba(255, 255, 255, 0.792);
+}
+
+
+
+@media (max-width: 850px) {
+    .fab {
+        position: fixed;
+        bottom: 20px;  /* Distance from bottom */
+        right: 20px;  /* Distance from right */
+        width: 40px;  /* Button size */
+        height: 40px;
+        font-size: 30px;
+        background-color: #0000009a;  /* Nice purple shade */
+        backdrop-filter: blur(25px);
+        color: white;
+        border-radius: 20%;  /* Make it round */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);  /* Add shadow */
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        z-index: 9999;
+        display: visible;
+    }
+    
+    /* Hover effect */
+    .fab:hover {
+        background-color: #00000019;
+        transform: scale(1.1);
+    }
+    
+    .calendar-app{
+        flex-direction: column;
+        row-gap: 2rem;
+        min-height: auto;
+        aspect-ratio: 3 / 2;
+    }
+
+    .calendar{
+        width: 30%;
+
+    }
+
+    .navigate-date{
+        margin-top: 1rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        margin: 1rem 0;
+
+
+    }
+
+    .weekdays{
+        margin: 1rem 0;
+    }
+    .toggle-btn {
+        margin-top: 1rem;
+        padding: 1rem 2rem;
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        
+    }
+    
+}
+
+/* 🌟 Responsive Trick: On smaller screens, they stack and switch visibility */
+@media (max-width: 850px) {
+    .wrapper {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        overflow: hidden;
+    }
+    .wrapper.landscape-blur{
+        backdrop-filter: blur(0px) !important;
+    }
+
+    .calendar-app,
+    .today-app {
+        align-items: center;
+        width: 90%;
+        position: absolute;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        scale: 100%;
+        box-shadow: rgba(0, 0, 0, 0.663) 0px 0px 20px 10px;
+        
+    }
+
+    /* Show only one app at a time */
+    .show-calendar .calendar-app {
+        opacity: 1;
+        align-items: center;
+        transform: scale(1.2);
+        position: relative;
+        scale: auto;
+        background-color: #43434383;
+        height: 55rem;
+        scale: 80%;
+        z-index: 1;
+        margin-bottom: 30%;
+        margin-top: auto;
+        
+    }
+
+    .heading{
+        color: #fff;
+        scale: auto;
+        font-family: "Comfortaa", sans-serif;
+        font-size: clamp(2rem, 1.5cqi, 3rem);
+        margin-top: 1rem;
+        margin-bottom: -1rem;
+    }
+    
+
+    .show-today .today-app {
+        opacity: 1;
+        transform: scale(1);
+        position: relative;
+        box-shadow: rgba(0, 0, 0, 0.663) 0px 0px 20px 10px;
+    }
+
+    .toggle-container{
+        position: relative;
+    }
+
+    .toggle-btn {
+        
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        z-index: 1;
+    }
+    .year {
+        margin-top: 2rem;
+        margin-left: 0.3rem;
+        margin-bottom: -3rem;
+        font-family: "Comfortaa", sans-serif;
+        font-size: clamp(2rem, 1.5cqi, 3rem);
+        color: #ffffff;
+    }
+    
+    .buttons i {
+        width: 3.5rem;
+        height: 3.5rem;
+        background-color: #00000050;
+        border-radius: 20%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        color: #c7c7c7;
+        cursor: pointer;
+    
+    }
+    
+    .weekdays {
+        width: 100%;
+        display: flex;
+        margin: 3rem 0;
+        margin-bottom: 1rem;
+    }
+    
+    .weekdays span {
+        width: calc(100% / 7);
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #ffffff;
+        letter-spacing: .1rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .days {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .days span {
+        font-size: 3rem;
+        width: calc(100% / 7);
+        aspect-ratio: 1;
+        scale: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffffff;
+        cursor: pointer;
+        text-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
+    }
+}
