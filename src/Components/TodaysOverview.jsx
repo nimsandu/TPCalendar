@@ -34,17 +34,27 @@ const TodaysOverview = () => {
   };
 
   const monthsOfYear = [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   // 3️⃣ States for background & month name
   const [cardBg, setCardBg] = useState("");
   const [monthName, setMonthName] = useState("");
 
-  // 4️⃣ State for random quote from Quotable
-  const [quote, setQuote] = useState(null);
-  const [quoteError, setQuoteError] = useState(null);
+  // 4️⃣ State for random advice from adviceslip.com
+  const [advice, setAdvice] = useState(null);
+  const [adviceError, setAdviceError] = useState(null);
 
   // 5️⃣ Current date/time
   const today = new Date();
@@ -59,25 +69,25 @@ const TodaysOverview = () => {
     setMonthName(monthsOfYear[realMonth]);
   }, [realMonth, monthImages]);
 
-  // 7️⃣ Fetch a random quote from Quotable
+  // 7️⃣ Fetch a random advice from adviceslip.com
   useEffect(() => {
-    const fetchQuote = async () => {
+    const fetchAdvice = async () => {
       try {
-        const res = await axios.get("http://api.quotable.io/random");
-        setQuote(res.data); // { content: "...", author: "..." }
+        const res = await axios.get("https://api.adviceslip.com/advice");
+        setAdvice(res.data.slip.advice); // Access the advice from the response
       } catch (err) {
         console.error(err);
-        setQuoteError("Failed to fetch quote. Please try again later.");
+        setAdviceError("Failed to fetch advice. Please try again later.");
       }
     };
-    fetchQuote();
+    fetchAdvice();
   }, []);
 
   // 8️⃣ Render logic
-  if (quoteError) {
+  if (adviceError) {
     return (
       <div className="today-portrait-card" style={{ backgroundImage: cardBg }}>
-        <p className="error-msg">{quoteError}</p>
+        <p className="error-msg">{adviceError}</p>
       </div>
     );
   }
@@ -98,21 +108,17 @@ const TodaysOverview = () => {
       <div className="date-info">
         <h1 className="big-date">{dateNum}</h1>
         <div className="dayt">
-        <p>{dayName}</p>
-        <p className="yeart">{yearNum}</p>
+          <p>{dayName}</p>
+          <p className="yeart">{yearNum}</p>
         </div>
-
       </div>
 
-      {/* Quote section at the bottom */}
+      {/* Advice section at the bottom */}
       <div className="quote-section">
-        {quote ? (
-          <>
-            <p className="quote-text">“{quote.content}”</p>
-            <p className="quote-author"> {quote.author}</p>
-          </>
+        {advice ? (
+          <p className="quote-text">“{advice}”</p>
         ) : (
-          <p>Loading quote...</p>
+          <p>Loading advice...</p>
         )}
       </div>
     </div>
