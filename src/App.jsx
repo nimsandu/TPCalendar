@@ -53,7 +53,13 @@ const App = () => {
     return (
         <div className="wrapper">
             {/* Separate div for the background */}
-            <div className={`background ${isLandscape ? 'landscape-blur' : ''}`} style={{ backgroundImage: background }}></div>
+            <div 
+  className={`background ${isLandscape ? 'landscape-blur' : ''}`} 
+  style={{ 
+    backgroundImage: background, 
+    transition: 'background-image 2s ease-in-out' // Add transition property
+  }}
+></div>
 
             {/* The main app content */}
             <div className="content">
