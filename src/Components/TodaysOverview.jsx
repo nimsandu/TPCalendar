@@ -63,7 +63,7 @@ const TodaysOverview = () => {
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const res = await axios.get("https://api.quotable.io/random");
+        const res = await axios.get("http://api.quotable.io/random");
         setQuote(res.data); // { content: "...", author: "..." }
       } catch (err) {
         console.error(err);
