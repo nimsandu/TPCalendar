@@ -52,6 +52,7 @@
 /* Keep content clear */
 .content {
     position: relative;
+    width: 100%;
     z-index: 1; /* Make sure the content is above the blurred background */
 }
 
@@ -92,7 +93,7 @@
     border: 2px solid rgba(145, 145, 145, 0.432);
     transition: transform 0.3s ease, opacity 0.3s ease;
     background: rgba(0, 0, 0, 0.489);
-    backdrop-filter: blur(50px) saturate(400%) !important;
+    backdrop-filter: blur(12px) saturate(200%) !important;
     
     margin-right: 20px;
 
@@ -259,8 +260,7 @@
     .calendar-app{
         flex-direction: column;
         row-gap: 2rem;
-        min-height: auto;
-        aspect-ratio: 3 / 2;
+        min-height: fit-content;
     }
 
     .calendar{
@@ -299,7 +299,7 @@
     .wrapper {
         flex-direction: column;
         align-items: center;
-        width: 100%;
+        height: fit-content;
         overflow: hidden;
     }
     .wrapper.landscape-blur{
@@ -323,15 +323,14 @@
     .show-calendar .calendar-app {
         opacity: 1;
         align-items: center;
-        transform: scale(1.2);
-        position: relative;
+        transform: scale(0.8);
+        position: fixed;
+        bottom: 10%;  /* Distance from bottom */
         scale: auto;
-        background-color: #43434383;
-        height: 55rem;
-        scale: 80%;
+        height: fit-content;
+        width: fit-content;
         z-index: 1;
-        margin-bottom: 30%;
-        margin-top: auto;
+        margin-right: 0%;
         
     }
 
