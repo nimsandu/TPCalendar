@@ -93,7 +93,7 @@
     border: 2px solid rgba(145, 145, 145, 0.432);
     transition: transform 0.3s ease, opacity 0.3s ease;
     background: rgba(0, 0, 0, 0.489);
-    backdrop-filter: blur(12px) saturate(200%) !important;
+    backdrop-filter: blur(4px) saturate(200%) !important;
     
     margin-right: 20px;
 
