@@ -62,10 +62,10 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="overlay">
       <h2>{poemToEdit ? "Edit Poem" : "Add New Poem"}</h2>
-      <input type="text" placeholder="Poem Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <textarea placeholder="Write your poem here..." value={content} onChange={(e) => setContent(e.target.value)} />
+      <input type="text" placeholder="Poem Title" className="poem-input" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <textarea placeholder="Write your poem here..." className="poem-input" value={content} onChange={(e) => setContent(e.target.value)} />
       {showBackstory ? (
-        <textarea placeholder="Add a backstory..." value={backstory} onChange={(e) => setBackstory(e.target.value)} />
+        <textarea placeholder="Add a backstory..." className="poem-input" value={backstory} onChange={(e) => setBackstory(e.target.value)} />
       ) : (
         <button onClick={() => setShowBackstory(true)}>+ Add a backstory</button>
       )}

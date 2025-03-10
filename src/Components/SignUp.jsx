@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Modal from "react-modal";
+import "./AuthStyles.css"; // Importing styles
+import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
 
@@ -10,39 +11,47 @@ const SignUp = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-  // For popups
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Popups
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleSignUp = async () => {
-    const auth = getAuth();
+    // 1. Basic checks before calling Firebase
+    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+      showError("All fields are required.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      showError("Passwords do not match.");
+      return;
+    }
+
     try {
+      const auth = getAuth();
+      // 2. Create user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // Send verification email
+
+      // 3. Send email verification
       await sendEmailVerification(userCredential.user);
 
-      // Show success popup
-      setSuccessMessage("Account created successfully! A verification email was sent. Please check your inbox.");
+      // 4. Show success popup
+      setSuccessMessage("Account created! Check your email to verify.");
       setShowSuccessModal(true);
-      setErrorMessage(null);
-      setShowErrorModal(false);
 
       // Clear fields
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
     } catch (error) {
-      // Show error popup
-      setErrorMessage(handleFirebaseError(error.code));
-      setShowErrorModal(true);
-      setSuccessMessage(null);
-      setShowSuccessModal(false);
+      showError(handleFirebaseError(error.code));
     }
   };
 
-  // Handle different Firebase error codes
+  // Simple helper to interpret Firebase error codes
   const handleFirebaseError = (code) => {
     switch (code) {
       case "auth/email-already-in-use":
@@ -56,36 +65,57 @@ const SignUp = () => {
     }
   };
 
-  // Called when user closes success modal
+  // Show an error popup
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorModal(true);
+    setSuccessMessage(null);
+    setShowSuccessModal(false);
+  };
+
+  // Close success modal
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
     setSuccessMessage(null);
-    // Optionally navigate to sign in page
+    // Optionally navigate to sign in page:
     // navigate("/signin");
   };
 
-  // Called when user closes error modal
+  // Close error modal
   const closeErrorModal = () => {
     setShowErrorModal(false);
     setErrorMessage(null);
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div className="auth-container">
       <h2>Sign Up</h2>
+      
       <input
         type="email"
+        className="auth-input"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-      /><br/><br/>
+      />
+
       <input
         type="password"
+        className="auth-input"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-      /><br/><br/>
-      <button onClick={handleSignUp}>Register</button>
+      />
+
+      <input
+        type="password"
+        className="auth-input"
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+
+      <button className="auth-button" onClick={handleSignUp}>Register</button>
 
       {/* SUCCESS MODAL */}
       <Modal

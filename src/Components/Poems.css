@@ -18,6 +18,21 @@
     display: flex;
     justify-content: space-between;
   }
+  .poem-input{
+    width: 80%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+    transition: border-color 0.3s ease-in-out;
+  }
+
+  .poem-input:focus {
+    border-color: #ff0088;
+  }
   .add-button {
     background: #008cba;
     color: white;
