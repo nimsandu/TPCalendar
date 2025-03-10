@@ -1,0 +1,70 @@
+.modal {
+    background: white;
+    padding: 20px;
+    width: 50%;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal h2 {
+    margin-bottom: 10px;
+  }
+  
+  .modal p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+  
+  .modal-buttons .close {
+    background: #ff5c5c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .modal-buttons .close:hover {
+    background: #e04848;
+  }
+
+  @media (max-width: 768px) {
+    .modal {
+      width: 90%;
+    }
+  
+    .poem-card {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+  
+    .poem-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .poem-buttons button {
+      width: 100%;
+    }
+  }

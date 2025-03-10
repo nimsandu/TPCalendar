@@ -1,0 +1,58 @@
+.modal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    margin: auto;
+    text-align: center;
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  .add-button {
+    background: #008cba;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+  }
+  .poem-card {
+    background: #f4f4f4;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+  }
+  .poem-buttons button {
+    margin-right: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .modal {
+      width: 90%;
+    }
+  
+    .poem-card {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+  
+    .poem-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .poem-buttons button {
+      width: 100%;
+    }
+  }
