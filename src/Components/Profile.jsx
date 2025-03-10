@@ -3,6 +3,7 @@ import { auth } from "../auth/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import SignOut from "./SignOut";
 import Poems from "./Poems";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -23,6 +24,7 @@ const Profile = () => {
       <h2>My Profile</h2>
       <p>Email: {user.email}</p>
       <SignOut />
+      <Link to="/change-password">Change Password</Link>
       <Poems />
     </div>
   );

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { db } from "../auth/firebaseConfig";
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // Import authentication
 import "./Poems.css";
 
-Modal.setAppElement("#root"); // Required for accessibility
+Modal.setAppElement("#root");
 
 const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
   const [title, setTitle] = useState("");
@@ -12,7 +13,9 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
   const [backstory, setBackstory] = useState("");
   const [showBackstory, setShowBackstory] = useState(false);
 
-  // Fill in form when editing
+  const auth = getAuth();
+  const user = auth.currentUser; // Get the logged-in user
+
   useEffect(() => {
     if (poemToEdit) {
       setTitle(poemToEdit.title);
@@ -25,15 +28,18 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
     }
   }, [poemToEdit]);
 
-  // Function to handle save
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) {
       alert("Title and content cannot be empty!");
       return;
     }
 
+    if (!user) {
+      alert("You must be logged in to save a poem.");
+      return;
+    }
+
     if (poemToEdit) {
-      // Editing existing poem
       const poemRef = doc(db, "poems", poemToEdit.id);
       await updateDoc(poemRef, {
         title,
@@ -41,43 +47,25 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
         backstory,
       });
     } else {
-      // Adding new poem
       await addDoc(collection(db, "poems"), {
         title,
         content,
         backstory,
-        timestamp: serverTimestamp(), // Save date and time
+        timestamp: serverTimestamp(),
+        userId: user.uid, // Store user ID
       });
     }
 
-    onClose(); // Close modal
+    onClose();
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      className="modal"
-      overlayClassName="overlay"
-    >
+    <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="overlay">
       <h2>{poemToEdit ? "Edit Poem" : "Add New Poem"}</h2>
-      <input
-        type="text"
-        placeholder="Poem Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        placeholder="Write your poem here..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-      />
+      <input type="text" placeholder="Poem Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <textarea placeholder="Write your poem here..." value={content} onChange={(e) => setContent(e.target.value)} />
       {showBackstory ? (
-        <textarea
-          placeholder="Add a backstory..."
-          value={backstory}
-          onChange={(e) => setBackstory(e.target.value)}
-        />
+        <textarea placeholder="Add a backstory..." value={backstory} onChange={(e) => setBackstory(e.target.value)} />
       ) : (
         <button onClick={() => setShowBackstory(true)}>+ Add a backstory</button>
       )}

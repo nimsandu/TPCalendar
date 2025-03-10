@@ -5,6 +5,9 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import Profile from "./Components/Profile";
+import ForgotPassword from "./Components/ForgotPassword";
+import ChangePassword from "./Components/ChangePassword";
+
 
 // Import your calendar stuff
 import CalendarApp from "./Components/CalendarApp";
@@ -96,12 +99,10 @@ const App = () => {
 
         {/* Sign In */}
         <Route path="/signin" element={<SignIn />} />
-
-        {/* Sign Up */}
         <Route path="/signup" element={<SignUp />} />
-
-        {/* Profile */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
       </Routes>
     </Router>
   );

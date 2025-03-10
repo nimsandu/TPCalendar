@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../auth/firebaseConfig";
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // Import authentication
 import PoemModal from "./PoemModal";
-import "./Poems.css"
-import ViewPoemModal from "./ViewPoemModal";  // Import the new modal
-import DeleteConfirmationModal from "./DeleteConfirmationModal"; // Import the new modal
+import "./Poems.css";
+import ViewPoemModal from "./ViewPoemModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 const Poems = () => {
   const [poems, setPoems] = useState([]);
@@ -15,14 +16,24 @@ const Poems = () => {
   const [deletePoemId, setDeletePoemId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const auth = getAuth();
+  const user = auth.currentUser; // Get the logged-in user
+
   useEffect(() => {
-    const q = query(collection(db, "poems"), orderBy("timestamp", "desc"));
+    if (!user) return; // Only fetch poems if a user is logged in
+
+    const q = query(
+      collection(db, "poems"),
+      where("userId", "==", user.uid), // Filter by user ID
+      orderBy("timestamp", "desc")
+    );
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setPoems(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]); // Re-run when user changes
 
   const openModal = () => {
     setPoemToEdit(null);
