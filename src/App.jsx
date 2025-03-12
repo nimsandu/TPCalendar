@@ -16,18 +16,18 @@ import "./Components/CalendarApp.css";
 
 // Background images (store in /public/images/ instead of importing in JS)
 const backgrounds = {
-  0: "/images/jan_mob.webp",
-  1: "/images/feb_mob.webp",
-  2: "/images/mar_mob.webp",
-  3: "/images/apr_mob.webp",
-  4: "/images/may_mob.webp",
-  5: "/images/jun_mob.webp",
-  6: "/images/jul_mob.webp",
-  7: "/images/aug_mob.webp",
-  8: "/images/sep_mob.webp",
-  9: "/images/oct_mob.webp",
-  10: "/images/nov_mob.webp",
-  11: "/images/dec_mob.webp",
+  0: "/images/jan_mob.jpeg",
+  1: "/images/feb_mob.jpeg",
+  2: "/images/mar_mob.jpeg",
+  3: "/images/apr_mob.jpeg",
+  4: "/images/may_mob.jpeg",
+  5: "/images/jun_mob.jpeg",
+  6: "/images/jul_mob.jpeg",
+  7: "/images/aug_mob.jpeg",
+  8: "/images/sep_mob.jpeg",
+  9: "/images/oct_mob.jpeg",
+  10: "/images/nov_mob.jpeg",
+  11: "/images/dec_mob.jpeg",
 };
 
 const App = () => {
