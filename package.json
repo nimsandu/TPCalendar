@@ -7,10 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "hosts": "vite-hosts"
   },
   "dependencies": {
+    "@mui/icons-material": "^6.4.7",
+    "@mui/material": "^6.4.7",
     "axios": "^1.7.9",
+    "dompurify": "^3.2.4",
     "firebase": "^11.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

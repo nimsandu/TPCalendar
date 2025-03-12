@@ -1,102 +1,156 @@
-/* General styles for the authentication pages */
+/* AuthStyles.css */
 .auth-container {
-    max-width: 40%;
-    margin: 8% auto;
-    padding: 40px;
-    background: rgb(25, 25, 25);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    transition: all 0.3s ease-in-out;
-    align-content: center;
+  max-width: 400px;
+  margin: 10% auto;
+  padding: 2.5rem;
+  background: rgba(25, 25, 25, 0.8);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.auth-container h2 {
+  color: #fff;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1rem;
+  margin: 0.8rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #0984e3;
+  box-shadow: 0 0 0 2px rgba(9, 132, 227, 0.2);
+}
+
+.auth-button {
+  width: 100%;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  background: #0984e3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  background: #0873c4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
+}
+
+.auth-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.auth-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+  color: #0984e3;
+  text-decoration: none;
+}
+
+.auth-divider {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.glass-modal {
+  background:  rgba(25, 25, 25, 0.8);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 350px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+.modal-content {
+  text-align: center;
+  width: 100%;
+}
+
+.modal-content h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.modal-close-btn {
+  background: #0984e3;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn.error {
+  background: #e74c3c;
+}
+
+.modal-close-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+      max-width: 90%;
+      margin: 15% auto;
+      padding: 1.5rem;
   }
   
   .auth-container h2 {
-    color: #fff;
-    font-size: 26px;
-    margin-bottom: 20px;
+      font-size: 1.75rem;
   }
   
-  /* Input fields */
   .auth-input {
-    width: 80%;
-    max-width: 300px;
-    padding: 10px;
-    margin: 10px 0;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    outline: none;
-    font-size: 16px;
-    transition: border-color 0.3s ease-in-out;
+      padding: 0.8rem;
   }
   
-  .auth-input:focus {
-    border-color: #4caf50;
-  }
-  
-  /* Buttons */
   .auth-button {
-    width: 60%;
-    padding: 12px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    color: #333;
+      padding: 0.8rem;
   }
-  
-  .auth-button:hover {
-    transform: scale(1.05);
-  }
-  
-  /* Links */
-  .auth-link {
-    color: #ffdada;
-    text-decoration: none;
-    font-size: 14px;
-  }
-  
-  .auth-link:hover {
-    text-decoration: underline;
-  }
-  
-  /* Modals */
-  .modal {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-  }
-  
-  .modal h2 {
-    color: #ff9a9e;
-  }
-  
-  .modal button {
-    background: linear-gradient(135deg, #ff758c, #ff7eb3);
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  
-  .modal button:hover {
-    transform: scale(1.1);
-  }
-  
-  @media (max-width: 768px) {
-    .auth-container {
-        max-width: 90%;
-        margin: 30% auto;
-    }
-
-  }
+}

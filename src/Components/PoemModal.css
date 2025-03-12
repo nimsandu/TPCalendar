@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lora:wght@400;700&family=Merriweather:wght@400;700&family=Poppins:wght@400;600&family=Open+Sans:wght@400;600&family=Source+Serif+Pro:wght@400;600&display=swap');
+
+/* PoemModal.css */
+.poem-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.poem-modal {
+    position: relative;
+    width: 600px;
+    max-width: 90%;
+    min-height: 500px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);
+    backdrop-filter: blur(12px);
+    border: none;
+    padding: 40px;
+    color: #ccc;
+    text-shadow: 1px 1px 3px #333a;
+    overflow: hidden;
+}
+
+.poem-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--card-accent);
+    box-shadow: 0 0 12px 2px var(--card-accent);
+}
+
+.poem-modal::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 25%,
+        var(--card-accent, #ff9e3d33) 50%,
+        transparent 75%
+    );
+    animation: gradientFlow 12s infinite linear;
+    z-index: -1;
+}
+
+@keyframes gradientFlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal-title-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #ffffff33;
+    font-size: 2.4rem;
+    color: #fff;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    font-family: 'Mona Sans', sans-serif;
+}
+
+.modal-title-input::placeholder {
+    color: #ffffff66;
+}
+
+.formatting-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.format-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #ccc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.format-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.font-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #ffffff33;
+    border-radius: 6px;
+    padding: 8px;
+    color: #ccc;
+    font-family: 'Mona Sans', sans-serif;
+}
+
+.font-select option {
+    font-family: inherit;
+  }
+
+.content-editable {
+    flex-grow: 1;
+    min-height: 200px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid #ffffff22;
+    color: #ccc;
+    font-size: 2rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    font-family: inherit;
+}
+
+.backstory-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #ffffff22;
+    border-radius: 8px;
+    color: #ccc;
+    font-family: 'Mona Sans', sans-serif;
+    margin-bottom: 20px;
+}
+
+.add-backstory-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    color: #ccc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.add-backstory-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.color-picker {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.color-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease;
+}
+
+.color-option.selected {
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.save-button {
+    background: #0984e3;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.save-button:hover {
+    background: #0873c4;
+}
+
+.cancel-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.cancel-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+    .poem-modal {
+        padding: 24px;
+    }
+    
+    .modal-title-input {
+        font-size: 1.4rem;
+    }
+    
+    .content-editable {
+        font-size: 1rem;
+    }
+}
+
+.format-button.active {
+    background-color: #8c8c8cc4;
+  }
+  
+  .content-editable {
+    border: 1px solid #cccccc00;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  .content-editable:focus {
+    border-color: #99999900;
+  }
+

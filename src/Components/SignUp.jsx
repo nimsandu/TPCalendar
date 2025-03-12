@@ -1,144 +1,179 @@
 import React, { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Modal from "react-modal";
-import "./AuthStyles.css"; // Importing styles
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../auth/firebaseConfig";
+import "./AuthStyles.css";
 import { useNavigate } from "react-router-dom";
+import avatar1 from "../images/avatar1.png";
+import avatar2 from "../images/avatar2.png";
+import avatar3 from "../images/avatar3.png";
+import avatar4 from "../images/avatar4.png";
+import avatar5 from "../images/avatar5.png";
+import Loader from "./Loader"; // Import Loader
 
-Modal.setAppElement("#root");
+const avatars = [avatar1, avatar2, avatar3, avatar4, avatar5];
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    avatar: "",
+  });
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  // Popups
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const handleAvatarSelect = (avatar) => {
+    setFormData({ ...formData, avatar });
+  };
 
-  const handleSignUp = async () => {
-    // 1. Basic checks before calling Firebase
-    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
-      showError("All fields are required.");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true); // Start loading
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      setLoading(false); // Stop loading if passwords don't match
       return;
     }
-    if (password !== confirmPassword) {
-      showError("Passwords do not match.");
-      return;
-    }
+
+    const auth = getAuth();
 
     try {
-      const auth = getAuth();
-      // 2. Create user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
 
-      // 3. Send email verification
-      await sendEmailVerification(userCredential.user);
+      await sendEmailVerification(user);
 
-      // 4. Show success popup
-      setSuccessMessage("Account created! Check your email to verify.");
-      setShowSuccessModal(true);
+      const userDocRef = doc(db, "users", formData.email);
+      await setDoc(userDocRef, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        avatar: formData.avatar,
+        email: formData.email,
+      });
 
-      // Clear fields
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
+      setLoading(false); // Stop loading
+      setShowModal(true);
+      setTimeout(() => {
+        setShowModal(false);
+        navigate("/signin");
+      }, 3000);
     } catch (error) {
-      showError(handleFirebaseError(error.code));
+      console.error("Error signing up:", error.message);
+      setError(error.message);
+      setLoading(false); // Stop loading on error
     }
-  };
-
-  // Simple helper to interpret Firebase error codes
-  const handleFirebaseError = (code) => {
-    switch (code) {
-      case "auth/email-already-in-use":
-        return "That email is already in use.";
-      case "auth/weak-password":
-        return "Your password is too weak. Please choose a stronger one.";
-      case "auth/invalid-email":
-        return "Invalid email format.";
-      default:
-        return "Something went wrong: " + code;
-    }
-  };
-
-  // Show an error popup
-  const showError = (message) => {
-    setErrorMessage(message);
-    setShowErrorModal(true);
-    setSuccessMessage(null);
-    setShowSuccessModal(false);
-  };
-
-  // Close success modal
-  const closeSuccessModal = () => {
-    setShowSuccessModal(false);
-    setSuccessMessage(null);
-    // Optionally navigate to sign in page:
-    // navigate("/signin");
-  };
-
-  // Close error modal
-  const closeErrorModal = () => {
-    setShowErrorModal(false);
-    setErrorMessage(null);
   };
 
   return (
     <div className="auth-container">
+      {loading && <Loader />} {/* Show loader when loading */}
       <h2>Sign Up</h2>
-      
-      <input
-        type="email"
-        className="auth-input"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="firstName"
+          placeholder="First Name"
+          className="auth-input"
+          value={formData.firstName}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          className="auth-input"
+          value={formData.lastName}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="auth-input"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="auth-input"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          className="auth-input"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+        />
 
-      <input
-        type="password"
-        className="auth-input"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <h3 style={{ color: "white", marginTop: "10px" }}>Choose Avatar</h3>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+          {avatars.map((avt, index) => (
+            <img
+              key={index}
+              src={avt}
+              alt={`Avatar ${index + 1}`}
+              style={{
+                width: "50px",
+                height: "50px",
+                cursor: "pointer",
+                border:
+                  formData.avatar === avt
+                    ? "3px solid #ff9a9e"
+                    : "3px solid transparent",
+                borderRadius: "50%",
+                transition: "0.3s",
+              }}
+              onClick={() => handleAvatarSelect(avt)}
+            />
+          ))}
+        </div>
 
-      <input
-        type="password"
-        className="auth-input"
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <button className="auth-button" onClick={handleSignUp}>Register</button>
+        <button type="submit" className="auth-button">
+          Sign Up
+        </button>
+        <p>
+          <a className="auth-link" href="/signin">
+            Already Have an Account? Sign In
+          </a>
+        </p>
+      </form>
 
-      {/* SUCCESS MODAL */}
       <Modal
-        isOpen={showSuccessModal}
-        onRequestClose={closeSuccessModal}
-        className="modal"
-        overlayClassName="overlay"
+        isOpen={showModal}
+        onRequestClose={() => setShowModal(false)}
+        className="modalcard modal-center" // added modal-center
       >
-        <h2>Success</h2>
-        <p>{successMessage}</p>
-        <button onClick={closeSuccessModal}>OK</button>
-      </Modal>
-
-      {/* ERROR MODAL */}
-      <Modal
-        isOpen={showErrorModal}
-        onRequestClose={closeErrorModal}
-        className="modal"
-        overlayClassName="overlay"
-      >
-        <h2>Error</h2>
-        <p>{errorMessage}</p>
-        <button onClick={closeErrorModal}>Close</button>
+        <h2>Email Verification Sent!</h2>
+        <p>Please check your email to verify your account.</p>
+        <button onClick={() => setShowModal(false)}>OK</button>
       </Modal>
     </div>
   );

@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 // Import your sign-in, sign-up, profile pages
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
+import SignIn from "./Components/SignIn";
+import SignUp from "./Components/SignUp";
 import Profile from "./Components/Profile";
 import ForgotPassword from "./Components/ForgotPassword";
 import ChangePassword from "./Components/ChangePassword";
+import EditProfile from "./Components/EditProfile";
+import FloatingActionButton from "./Components/FloatingActionButton";
+
 
 
 // Import your calendar stuff
@@ -63,14 +66,14 @@ const App = () => {
 
   return (
     <Router>
-      {/* Basic navbar for links */}
+      {/* Basic navbar for links 
       <nav style={{ margin: "1rem" }}>
         <Link to="/">Home</Link> |{" "}
         <Link to="/signin">Sign In</Link> |{" "}
         <Link to="/signup">Sign Up</Link> |{" "}
         <Link to="/profile">Profile</Link>
-      </nav>
-
+      </nav>*/}
+      <FloatingActionButton />
       <Routes>
         {/* Root path ("/") -> Show calendar */}
         <Route
@@ -103,6 +106,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
       </Routes>
     </Router>
   );

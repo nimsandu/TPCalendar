@@ -1,70 +1,142 @@
-.modal {
-    background: white;
-    padding: 20px;
-    width: 50%;
-    margin: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .modal h2 {
-    margin-bottom: 10px;
-  }
-  
-  .modal p {
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  
-  .modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
-  
-  .modal-buttons .close {
-    background: #ff5c5c;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .modal-buttons .close:hover {
-    background: #e04848;
-  }
+/* ViewPoemModal.css */
+.view-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
-  @media (max-width: 768px) {
-    .modal {
-      width: 90%;
-    }
-  
-    .poem-card {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-  
-    .poem-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-  
-    .poem-buttons button {
-      width: 100%;
-    }
+.view-modal {
+  position: relative;
+  width: 600px;
+  max-width: 90%;
+  min-height: 400px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);
+  backdrop-filter: blur(12px);
+  border: none;
+  padding: 40px;
+  color: #ccc;
+  text-shadow: 1px 1px 3px #333a;
+  overflow: hidden;
+}
+
+.view-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-accent, #ff9e3d);
+  box-shadow: 0 0 12px 2px var(--card-accent, #ff9e3d);
+}
+
+.view-modal::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+      45deg,
+      transparent 25%,
+      var(--card-accent, #ff9e3d33) 50%,
+      transparent 75%
+  );
+  animation: gradientFlow 12s infinite linear;
+  z-index: -1;
+}
+
+@keyframes gradientFlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.view-title {
+  font-size: 2rem;
+  margin: 0 0 16px 0;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.view-timestamp {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 24px;
+}
+
+.view-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #aaa;
+  white-space: pre-wrap;
+  margin-bottom: 24px;
+}
+
+.view-backstory {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+.backstory-heading {
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.backstory-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #999;
+}
+
+.view-modal-buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.view-close-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: #ccc;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  .view-modal {
+      padding: 24px;
   }
+  
+  .view-title {
+      font-size: 1.5rem;
+  }
+  
+  .view-content {
+      font-size: 1rem;
+  }
+}

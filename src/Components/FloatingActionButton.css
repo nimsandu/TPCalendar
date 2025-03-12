@@ -1,0 +1,107 @@
+.fab-container {
+    position: fixed;
+    bottom: 20px;  /* Distance from bottom */
+    left: 20px;  /* Distance from right */
+    padding: 10px;
+    width: auto;  /* Button size */
+    height: 40px;
+    font-size: 30px;
+    background-color: #0000009a;  /* Nice purple shade */
+    backdrop-filter: blur(25px);
+    color: white;
+    border-radius: 20px;  /* Make it round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);  /* Add shadow */
+    cursor: pointer;
+    z-index: 9999;
+    display: visible;
+    transition: all 0.4s ease-in-out;
+  }
+  
+  .fab-container:hover {
+    background-color: #00000019;
+    transform: scale(1.1);
+    border-radius: 10px;
+    transition: all 0.4s ease-in-out;
+  }
+  
+  .fab-logged-in {
+    display: flex;
+    align-items: center;
+    transition: all 0.4s ease-in-out;
+  }
+  
+  .fab-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    margin-right: 5px;
+    margin-left: -10px;
+    transition: all 0.4s ease-in-out;
+  }
+
+
+  
+  .fab-text {
+    font-size: 14px;
+    white-space: nowrap;
+    transition: all 0.4s ease-in-out;
+  }
+
+  .fab-logged-out{
+    display: flex;
+    align-items: center;
+    transition: all 0.4s ease-in-out;
+  }
+  
+  .fab-text {
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.4s ease-in-out;
+  }
+  
+  .fab-calendar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+  }
+  
+  .fab-calendar-icon {
+    font-size: 24px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 5px;
+}
+  
+  /* Hide the text for logged in users on mobile */
+  @media (max-width: 600px) {
+    .fab-logged-in .fab-text {
+      display: none;
+    }
+
+    .fab-avatar {
+      margin-right: -10px;
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+      transition: 0.4s ease-in-out;
+    }
+
+    .fab-avatar:hover {
+      border-radius: 20%;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .fab-container
+    {
+      height: 55px;
+      width: 55px;
+      border-radius: 50%;
+    }
+  }
+  
