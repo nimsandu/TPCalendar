@@ -154,3 +154,112 @@
       padding: 0.8rem;
   }
 }
+
+/* Additional AuthStyles.css */
+.avatar-heading {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 1.5rem 0;
+  font-size: 1.1rem;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.avatar-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.avatar-option:hover {
+  transform: scale(1.1);
+}
+
+.avatar-option.selected {
+  border-color: #0984e3;
+  box-shadow: 0 0 0 2px rgba(9, 132, 227, 0.3);
+}
+
+.auth-error {
+  color: #ff6b6b;
+  margin: 1rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .avatar-grid {
+      grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .avatar-option {
+      width: 80px;
+      height: 80px;
+  }
+}
+/* Verification Modal Styles */
+.verification-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.verification-text {
+  line-height: 1.6;
+  margin: 1rem 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.verification-note {
+  margin-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+/* Avatar Grid Styles */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin: 1rem auto;
+  max-width: 400px;
+}
+
+.avatar-option {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  object-fit: cover;
+}
+
+.avatar-option.selected {
+  border-color: #0984e3;
+  box-shadow: 0 0 0 3px rgba(9, 132, 227, 0.3);
+}
+
+/* Error Message Styling */
+.auth-error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
