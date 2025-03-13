@@ -70,12 +70,14 @@ body {
 .poem-card::after {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 300%;
+    top: -110%;
+    bottom: 0%;
+    right: 0%;
+    left: -245%;
+    width: 550%;
+    height: 400%;
     background: linear-gradient(45deg, transparent 25%, var(--card-accent, #ff9e3d33) 40%, transparent 60%);
-    animation: gradientFlow 12s infinite linear;
+    animation: gradientFlow 12s 1 ease-out;
     z-index: -1;
 }
 
@@ -89,7 +91,7 @@ body {
   box-shadow: 0px 0px 14px 3px #ffb444;
 }
 
-@keyframes gradientFlow {
+/*@keyframes gradientFlow {
     0% {
         transform: rotate(0deg);
     }
@@ -97,7 +99,7 @@ body {
     100% {
         transform: rotate(360deg);
     }
-}
+}*/
 
 .poem-title {
     font-size: 2.3rem;
@@ -190,7 +192,7 @@ body {
 /* These elements are designed for a single card layout, not a grid */
 
 /* Animations */
-@keyframes rotate360 {
+/*@keyframes rotate360 {
     to {
         rotate: 360deg;
     }
@@ -220,4 +222,4 @@ body {
 @keyframes gradientFlow {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
+}*/

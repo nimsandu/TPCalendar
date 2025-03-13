@@ -1,13 +1,13 @@
 {
   "name": "The Poets Calendar",
   "short_name": "TPCalendar",
-  "start_url": "/index.html",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
+  "background_color": "#000",
   "lang": "en",
   "scope": "/",
   "description": "tp calendar beta preview v0.1",
-  "theme_color": "#000000",
+  "theme_color": "#000",
   "icons": [
     {
       "src": "public/pwa-icon-192x192.png",

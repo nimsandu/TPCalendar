@@ -13,14 +13,14 @@
   "dependencies": {
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
+    "@uiw/react-md-editor": "^4.0.5",
     "axios": "^1.7.9",
     "dompurify": "^3.2.4",
     "firebase": "^11.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-modal": "^3.16.3",
-    "react-router-dom": "^7.3.0",
-    "vercel": "^41.4.0"
+    "react-router-dom": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
