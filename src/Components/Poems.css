@@ -24,17 +24,17 @@ body {
 }
 
 .poem-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 28px;
+    columns: 320px auto; /* Creates responsive columns with min 320px width */
+    column-gap: 28px;
     padding: 28px;
     max-width: 1440px;
     margin: 0 auto;
 }
 
 .poem-card {
+    break-inside: avoid; /* Prevent cards from splitting between columns */
+    margin-bottom: 28px; /* Replace grid gap with margin */
     position: relative;
-    /* height: 500px;  Let height be dynamic */
     border-radius: 16px;
     background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);
     backdrop-filter: blur(4px);
@@ -44,7 +44,7 @@ body {
     color: #ccc;
     overflow: hidden;
     transition: transform 0.3s ease;
-    display: flex; /* Use flexbox for layout within the card */
+    display: flex;
     flex-direction: column;
 }
 
