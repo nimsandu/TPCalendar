@@ -1,12 +1,12 @@
 {
-  "name": "The Poets Calendar",
+  "name": "The Poet's Calendar",
   "short_name": "TPCalendar",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000",
   "lang": "en",
   "scope": "/",
-  "description": "tp calendar beta preview v0.1",
+  "description": "The Poet's Calendar Beta v.1.2",
   "theme_color": "#000",
   "icons": [
     {

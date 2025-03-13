@@ -100,9 +100,9 @@ const ChangePassword = () => {
             <div className="change-password-card">
                 {loading && <Loader />}
                 <button className="modern-back-button" onClick={handleBack}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0078d4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="back-svg">
-                        <polyline points="15 18 9 12 15 6" />
-                    </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
                 </button>
                 <h2 className="card-title">Change Password</h2>
                 <input

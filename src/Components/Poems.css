@@ -33,7 +33,8 @@ body {
 
 .poem-card {
     break-inside: avoid; /* Prevent cards from splitting between columns */
-    margin-bottom: 28px; /* Replace grid gap with margin */
+    margin-bottom: 20px; /* Replace grid gap with margin */
+    margin-top: 10px;
     position: relative;
     border-radius: 16px;
     background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);

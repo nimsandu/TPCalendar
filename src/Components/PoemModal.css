@@ -187,35 +187,38 @@
 
 .color-picker {
     display: flex;
-    gap: 10px;
-    width: fit-content;
-    margin-bottom: -55px;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+
 }
 
 .color-option {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: transform 0.2s ease;
+    transition: border-color 0.3s ease;
+    box-shadow: 0 0 8px #000000b1;
 }
 
 .color-option.selected {
     border-color: #fff;
-    transform: scale(1.1);
 }
+
 
 .modal-actions {
     display: flex;
     gap: 12px;
-    justify-content: flex-end;
+    justify-content: center;
     margin-top: auto;
+    margin-bottom: -25px;
     padding-top: 20px;
 }
 
 .save-button {
-    background: #0984e3;
+    background: #0985e36c;
     color: white;
     padding: 12px 24px;
     border: none;
