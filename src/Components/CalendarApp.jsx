@@ -3,7 +3,7 @@ import TodaysOverview from "./TodaysOverview";
 
 const CalendarApp = ({ selectedMonth, setSelectedMonth }) => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [activeApp, setActiveApp] = useState("calendar");
+  const [activeApp, setActiveApp] = useState("today"); // Default to Today's Overview
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const monthsOfYear = [
@@ -14,9 +14,6 @@ const CalendarApp = ({ selectedMonth, setSelectedMonth }) => {
   const daysInMonth = new Date(currentYear, selectedMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, selectedMonth, 1).getDay();
   const today = new Date();
-
-
-
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -51,7 +48,7 @@ const CalendarApp = ({ selectedMonth, setSelectedMonth }) => {
       return prev - 1;
     });
   };
-  
+
   const handleNextMonth = () => {
     setSelectedMonth((prev) => {
       if (prev === 11) {
@@ -63,21 +60,19 @@ const CalendarApp = ({ selectedMonth, setSelectedMonth }) => {
   };
 
   return (
-    <div className={`wrapper ${activeApp === "calendar" ? "show-calendar" : "show-today"}`}> {//style={{ backdropFilter: "blur(12px)" }}
-    }
+    <div className={`wrapper ${activeApp === "calendar" ? "show-calendar" : "show-today"}`}>
       <div className="calendar-app">
         <div className="buttmonth">
-        <div className="calendar" >
-          <h1 className="heading">{monthsOfYear[selectedMonth]}</h1>
-          <h2 className="year">{currentYear}</h2>
-          <div className="navigate-date">
-            <div className="buttons">
-              <i className="bx bx-chevron-left" onClick={handlePrevMonth}></i>
-              <i className="bx bx-chevron-right" onClick={handleNextMonth}></i>
+          <div className="calendar">
+            <h1 className="heading">{monthsOfYear[selectedMonth]}</h1>
+            <h2 className="year">{currentYear}</h2>
+            <div className="navigate-date">
+              <div className="buttons">
+                <i className="bx bx-chevron-left" onClick={handlePrevMonth}></i>
+                <i className="bx bx-chevron-right" onClick={handleNextMonth}></i>
+              </div>
             </div>
           </div>
-        </div>
-         
 
           <div className="weekdays">
             {daysOfWeek.map((day) => (
@@ -110,6 +105,7 @@ const CalendarApp = ({ selectedMonth, setSelectedMonth }) => {
       <div className="today-app">
         <TodaysOverview />
       </div>
+
       <div className="fab" onClick={toggleApp}>
       ⇆
       </div>
