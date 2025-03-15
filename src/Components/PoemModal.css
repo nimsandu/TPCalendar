@@ -96,6 +96,8 @@
     color: #ccc;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: -5px;
+    margin-bottom: -10px;
 }
 
 .format-button:hover {
@@ -105,6 +107,7 @@
 .content-editable {
     flex: 1;
     min-height: 200px;
+    max-height: 35vh;
     padding: 16px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -140,7 +143,9 @@
 
 .backstory-input {
     width: 100%;
-    min-height: 100px;
+    min-height: 50px;
+    flex: 1;
+    max-height: 70px;
     padding: 16px;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid #ffffff22;
@@ -154,6 +159,7 @@
 
 .backstory-input::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 
 .backstory-input::-webkit-scrollbar-track {

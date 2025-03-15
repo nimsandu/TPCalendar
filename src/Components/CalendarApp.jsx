@@ -29,12 +29,12 @@ const CalendarApp = ({ selectedMonth, setSelectedMonth }) => {
 
   const toggleApp = () => {
     setActiveApp((prevView) => {
-      if (prevView === "today") {
+      if (prevView === "calendar") {
         setSelectedMonth(new Date().getMonth());
         setCurrentYear(new Date().getFullYear());
-        return "calendar";
-      } else {
         return "today";
+      } else {
+        return "calendar";
       }
     });
   };
