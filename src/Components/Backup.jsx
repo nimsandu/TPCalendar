@@ -17,7 +17,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import defaultAvatar from '../images/avatar.png';
 import './Backup.css';
 import Loader from './Loader';
-import CustomModal from '../components/CustomModal'; // Assuming you have a custom modal component
+import CustomModal from '../Components/CustomModal'; // Assuming you have a custom modal component
 
 const Backup = () => {
     const [user, setUser] = useState(null);
