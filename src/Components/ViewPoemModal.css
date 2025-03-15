@@ -185,16 +185,15 @@
 .view-close-button {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  padding: 10px;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 25px;
+  height: 25px;
   cursor: pointer;
   color: #ccc;
   transition: all 0.3s ease;
   position: absolute;
-  top: 3%;
-  left: 95%;
+  top: 4%;
+  right: 0%;
   transform: translateX(-50%);
 
 }
