@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import DOMPurify from "dompurify";
 import { db, auth } from "../auth/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth"; 
+import { onAuthStateChanged } from "firebase/auth";
 import defaultAvatar from "../images/avatar.png";
 import "./ViewPoemModal.css";
 
@@ -25,7 +25,7 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
             }
         });
         return () => unsubscribe();
-    }, []);
+    },);
 
     useEffect(() => {
         setModalIsOpen(isOpen);
@@ -93,12 +93,11 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
         }
     };
 
-    
 
     if (!poem) return null;
 
     return (
-      
+
         <Modal
             isOpen={modalIsOpen}
             onRequestClose={onClose}
@@ -114,12 +113,13 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
                 },
             }}
         >
-          <button className="view-close-button" onClick={onClose}>
-                        <i className="fas fa-times"></i>
-                    </button>
-          <div className = "light-tube-download"></div>
+            <div className="close-container">
+            <button className="view-close-button" onClick={onClose}>
+                    <i className="fas fa-times"></i>
+                </button>
+            </div>
             <div className="view-modal-content" ref={modalRef} style={{position:'relative', overflow: 'visible', width:'100%', height:'100%'}}>
-
+                <div className = "light-tube-download"></div>
                 <div className="author-header">
                     <img
                         src={userData?.avatar || defaultAvatar}
@@ -144,7 +144,7 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
                         dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(poem.content || ""),
                         }}
-                        
+
                     />
 
                     {poem.backstory && (
@@ -159,11 +159,12 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
                 </div>
 
                 <div className="view-modal-actions">
-                    
-                    
+
+
                 </div>
-                
+
             </div>
+
         </Modal>
     );
 };

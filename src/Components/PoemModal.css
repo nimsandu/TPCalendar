@@ -145,7 +145,7 @@
     width: 100%;
     min-height: 50px;
     flex: 1;
-    max-height: 70px;
+    max-height: 100px;
     padding: 16px;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid #ffffff22;
