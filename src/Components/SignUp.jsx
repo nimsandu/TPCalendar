@@ -55,12 +55,13 @@ const SignUp = () => {
 
             await sendEmailVerification(user);
 
-            const userDocRef = doc(db, "users", formData.email);
+            // Create user document in the 'users' collection, using uid as document ID
+            const userDocRef = doc(db, "users", user.uid);
             await setDoc(userDocRef, {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 avatar: formData.avatar,
-                email: formData.email,
+                email: formData.email, // Optionally store email in the user document
             });
 
             setLoading(false); // Stop loading

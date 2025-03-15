@@ -1,66 +1,25 @@
+// ViewPoemModal.jsx
 import React, { useEffect, useState, useRef } from "react";
 import Modal from "react-modal";
 import DOMPurify from "dompurify";
-import { db, auth } from "../auth/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
 import defaultAvatar from "../images/avatar.png";
 import "./ViewPoemModal.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileImport } from '@fortawesome/free-solid-svg-icons';
 
 Modal.setAppElement("#root");
 
-const ViewPoemModal = ({ isOpen, onClose, poem }) => {
+const ViewPoemModal = ({ isOpen, onClose, poem, authorData }) => { // Receive authorData prop
     const [modalIsOpen, setModalIsOpen] = useState(isOpen);
-    const [userData, setUserData] = useState(null);
     const [formattedDate, setFormattedDate] = useState("");
     const modalRef = useRef(null);
-    const [userEmail, setUserEmail] = useState(null);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setUserEmail(user.email);
-            } else {
-                setUserEmail(null);
-            }
-        });
-        return () => unsubscribe();
-    },);
 
     useEffect(() => {
         setModalIsOpen(isOpen);
         if (isOpen && poem) {
-            fetchUserData();
             formatTimestamp();
         }
-    }, [isOpen, poem, userEmail]);
-
-    const fetchUserData = async () => {
-        try {
-            if (userEmail) {
-                const userRef = doc(db, "users", userEmail);
-                const userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    setUserData({
-                        displayName: userSnap.data().firstName + " " + userSnap.data().lastName || "Anonymous Poet",
-                        avatar: userSnap.data().avatar || defaultAvatar,
-                    });
-                } else {
-                    setUserData({
-                        displayName: "Anonymous Poet",
-                        avatar: defaultAvatar,
-                    });
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            setUserData({
-                displayName: "Anonymous Poet",
-                avatar: defaultAvatar,
-            });
-        }
-    };
+    }, [isOpen, poem]);
 
     const formatTimestamp = () => {
         try {
@@ -93,11 +52,14 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
         }
     };
 
-
     if (!poem) return null;
 
-    return (
+    const displayName = authorData?.firstName && authorData?.lastName
+        ? `${authorData.firstName} ${authorData.lastName}`
+        : "Anonymous Poet";
+    const avatar = authorData?.avatar || defaultAvatar;
 
+    return (
         <Modal
             isOpen={modalIsOpen}
             onRequestClose={onClose}
@@ -114,23 +76,34 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
             }}
         >
             <div className="close-container">
-            <button className="view-close-button" onClick={onClose}>
+                <button className="view-close-button" onClick={onClose}>
                     <i className="fas fa-times"></i>
                 </button>
             </div>
-            <div className="view-modal-content" ref={modalRef} style={{position:'relative', overflow: 'visible', width:'100%', height:'100%'}}>
-                <div className = "light-tube-download"></div>
+            <div className="view-modal-content" ref={modalRef} style={{ position: 'relative', overflow: 'visible', width: '100%', height: '100%' }}>
+                <div className="light-tube-download"></div>
                 <div className="author-header">
                     <img
-                        src={userData?.avatar || defaultAvatar}
+                        src={avatar}
                         alt="Author"
                         className="author-avatar"
                     />
                     <div className="author-info">
                         <h3 className="author-name">
-                            {userData?.displayName || "Anonymous Poet"}
+                            {displayName}
                         </h3>
-                        {formattedDate && <p className="poem-date">{formattedDate}</p>}
+                        {formattedDate && (
+                            <p className="poem-date">
+                                {formattedDate}
+                            </p>
+                        )}
+                        <p>
+                        {poem.imported && (
+                                    <span className="imported-indicator" title="Restored from a Backup">
+                                        <FontAwesomeIcon icon={faFileImport} /> Restored from a Backup
+                                    </span>
+                                )}
+                        </p>
                     </div>
                 </div>
 
@@ -144,7 +117,6 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
                         dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(poem.content || ""),
                         }}
-
                     />
 
                     {poem.backstory && (
@@ -159,12 +131,9 @@ const ViewPoemModal = ({ isOpen, onClose, poem }) => {
                 </div>
 
                 <div className="view-modal-actions">
-
-
+                    {/* Actions can be added here if needed */}
                 </div>
-
             </div>
-
         </Modal>
     );
 };

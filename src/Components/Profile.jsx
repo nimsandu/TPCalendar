@@ -1,29 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { auth, db } from "../auth/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import SignOut from "./SignOut";
 import Poems from "./Poems";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import defaultAvatar from "../images/avatar.png";
 import "./Profile.css";
 import Loader from "./Loader";
-
-
 import App from "../App";
+import PoemModal from "./PoemModal"; // Import PoemModal
 
 const Profile = () => {
     const [user, setUser] = useState(null);
-    const [userData, setUserData] = useState({ firstName: "", lastName: "", avatar: "" });
+    const [userData, setUserData] = useState({ firstName: "", lastName: "", avatar: "", email: "" });
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const poemsRef = useRef(null);
+    const [isPoemModalOpen, setIsPoemModalOpen] = useState(false);
+    const [poemToEditFromProfile, setPoemToEditFromProfile] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
                 try {
-                    const userRef = doc(db, "users", currentUser.email);
+                    const userRef = doc(db, "users", currentUser.uid);
                     const userSnap = await getDoc(userRef);
                     if (userSnap.exists()) {
                         setUserData(userSnap.data());
@@ -33,7 +36,7 @@ const Profile = () => {
                 }
             } else {
                 setUser(null);
-                setUserData({ firstName: "", lastName: "", avatar: "" });
+                setUserData({ firstName: "", lastName: "", avatar: "", email: "" });
             }
             setLoading(false);
         });
@@ -42,37 +45,25 @@ const Profile = () => {
 
     const toggleProfileMenu = () => setShowProfileMenu(!showProfileMenu);
 
-    const exportPoems = async () => {
-        if (user) {
-            try {
-                const poemsCollection = collection(db, "poems");
-                const poemsQuery = query(poemsCollection, where("userId", "==", user.uid)); // Filter by userId
-                const poemsSnapshot = await getDocs(poemsQuery);
-    
-                if (poemsSnapshot.empty) {
-                    console.warn("No poems found for this user.");
-                    return;
-                }
-    
-                const poemsData = poemsSnapshot.docs.map((doc) => doc.data());
-    
-                const jsonData = JSON.stringify(poemsData, null, 2);
-                const blob = new Blob([jsonData], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "poems_backup.json";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error("Error exporting poems:", error);
-            }
-        }
+    const goToBackupPage = () => {
+        navigate("/backup");
     };
-    
-        
+
+    const handleOpenPoemModal = () => {
+        setPoemToEditFromProfile(null); // Reset for adding new
+        setIsPoemModalOpen(true);
+    };
+
+    const handleClosePoemModal = () => {
+        setIsPoemModalOpen(false);
+        setPoemToEditFromProfile(null);
+    };
+
+    const handleEditPoemFromChild = (poem) => {
+        setPoemToEditFromProfile(poem);
+        setIsPoemModalOpen(true);
+    };
+
     if (loading) {
         return <Loader />;
     }
@@ -88,14 +79,12 @@ const Profile = () => {
                     <button className="profile-pic-btn" onClick={toggleProfileMenu}>
                         <img src={userData.avatar || defaultAvatar} alt="Profile" className="profile-pic" />
                     </button>
-                    
-                    <button className="add-new-btn" onClick={() => document.querySelector('.add-button').click()}>
+                    <button className="add-new-btn" onClick={handleOpenPoemModal}>
                         +
                     </button>
                 </div>
             </nav>
 
-            
             {showProfileMenu && (
                 <div className="profile-menu-overlay" onClick={toggleProfileMenu}>
                     <div className="glass-profile-menu" onClick={(e) => e.stopPropagation()}>
@@ -110,7 +99,7 @@ const Profile = () => {
                                     ? `${userData.firstName} ${userData.lastName}`
                                     : "User"}
                             </h3>
-                            <p className="menu-email">{user.email}</p>
+                            <p className="menu-email">{userData.email}</p>
                         </div>
 
                         <div className="menu-actions">
@@ -120,9 +109,9 @@ const Profile = () => {
                             <Link to="/edit-profile" className="menu-item">
                                 Edit Profile
                             </Link>
-                            <button className="backup-btn" onClick={exportPoems}>
-                        Export Backup
-                    </button>
+                            <button className="backup-btn" onClick={goToBackupPage}>
+                                Backup & Restore
+                            </button>
                             <SignOut className="menu-item" />
                             <button className="close-menu" onClick={toggleProfileMenu}>
                                 Close
@@ -134,13 +123,18 @@ const Profile = () => {
 
             <div className="greeting-message">
                 <h2>
-                    {userData.firstName
-                        ? `Hi, ${userData.firstName}!`
-                        : "Welcome to your profile!"}
+                    {userData.firstName ? `Hi, ${userData.firstName}!` : "Welcome to your profile!"}
                 </h2>
             </div>
 
-            <Poems /> 
+            <Poems user={user} onOpenModal={handleOpenPoemModal} onEditPoem={handleEditPoemFromChild} />
+
+            <PoemModal
+                isOpen={isPoemModalOpen}
+                onClose={handleClosePoemModal}
+                poemToEdit={poemToEditFromProfile}
+                user={user}
+            />
         </div>
     );
 };

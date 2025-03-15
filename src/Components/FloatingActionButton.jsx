@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, collection, onSnapshot } from "firebase/firestore"; // Import collection and onSnapshot
+import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../auth/firebaseConfig";
 import defaultAvatar from "../images/avatar.png";
 import "./FloatingActionButton.css";
@@ -17,7 +17,7 @@ const FloatingActionButton = () => {
             if (currentUser) {
                 setUser(currentUser);
                 try {
-                    const userRef = doc(db, "users", currentUser.email);
+                    const userRef = doc(db, "users", currentUser.uid);
                     const userSnap = await getDoc(userRef);
                     if (userSnap.exists()) {
                         setUserData(userSnap.data());
@@ -36,11 +36,13 @@ const FloatingActionButton = () => {
     }, []);
 
     const handleClick = () => {
-        if (user) {
-            if (location.pathname === "/profile") {
-                navigate("/");
-            } else {
+        if (location.pathname === "/signin") {
+            navigate("/"); // Navigate to the app root from the sign-in page
+        } else if (user) {
+            if (location.pathname === "/") {
                 navigate("/profile");
+            } else {
+                navigate("/");
             }
         } else {
             navigate("/signin");

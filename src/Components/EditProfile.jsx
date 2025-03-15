@@ -7,7 +7,7 @@ import avatar2 from "../images/avatar2.png";
 import avatar3 from "../images/avatar3.png";
 import avatar4 from "../images/avatar4.png";
 import avatar5 from "../images/avatar5.png";
-import Loader from "./Loader"; // Import Loader
+import Loader from "./Loader";
 import "./EditProfile.css";
 
 const avatars = [avatar1, avatar2, avatar3, avatar4, avatar5];
@@ -16,12 +16,12 @@ const EditProfile = () => {
     const navigate = useNavigate();
     const [userData, setUserData] = useState({ firstName: "", lastName: "", avatar: "" });
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const userRef = doc(db, "users", auth.currentUser.email);
+                const userRef = doc(db, "users", auth.currentUser.uid); // Use auth.currentUser.uid
                 const userSnap = await getDoc(userRef);
                 if (userSnap.exists()) {
                     setUserData(userSnap.data());
@@ -29,7 +29,7 @@ const EditProfile = () => {
             } catch (err) {
                 console.error("Error fetching user data:", err);
             } finally {
-                setLoading(false); // Stop loading after fetch
+                setLoading(false);
             }
         };
 
@@ -47,10 +47,10 @@ const EditProfile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-        setLoading(true); // Start loading before update
+        setLoading(true);
 
         try {
-            const userRef = doc(db, "users", auth.currentUser.email);
+            const userRef = doc(db, "users", auth.currentUser.uid); // Use auth.currentUser.uid
             await updateDoc(userRef, {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
@@ -61,13 +61,13 @@ const EditProfile = () => {
             console.error("Error updating profile:", err);
             setError(err.message);
         } finally {
-            setLoading(false); // Stop loading after update
+            setLoading(false);
         }
     };
 
     return (
         <div className="auth-container">
-            {loading && <Loader />} {/* Show loader when loading */}
+            {loading && <Loader />}
             <button className="apple-back-button" onClick={() => navigate(-1)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="15 18 9 12 15 6" />

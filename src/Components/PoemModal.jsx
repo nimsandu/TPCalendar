@@ -9,7 +9,7 @@ import Loader from "./Loader";
 
 Modal.setAppElement("#root");
 
-const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
+const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'user' to props
     const [title, setTitle] = useState("");
     const [backstory, setBackstory] = useState("");
     const [showBackstory, setShowBackstory] = useState(false);
@@ -17,8 +17,8 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
     const contentRef = useRef(null);
     const [loading, setLoading] = useState(false);
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+    // const auth = getAuth(); // No need to initialize auth here if 'user' prop is passed
+    // const user = auth.currentUser; // 'user' is now received as a prop
 
     const colors = [
         "#363636", // Dark Gray
@@ -28,7 +28,7 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
         "#16504b", // Teal
         "#42275e", // Purple
         "#283742", // Dark Slate Gray
-        "#6E2C00"  // Sienna
+        "#6E2C00"   // Sienna
     ];
 
     useEffect(() => {
@@ -70,6 +70,12 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
             return;
         }
 
+        if (!user?.uid) {
+            console.error("User not authenticated.");
+            alert("User not authenticated. Please log in again.");
+            return;
+        }
+
         const poemData = {
             title: DOMPurify.sanitize(title),
             content: DOMPurify.sanitize(contentRef.current.innerHTML),
@@ -83,9 +89,9 @@ const PoemModal = ({ isOpen, onClose, poemToEdit }) => {
 
         try {
             if (poemToEdit) {
-                await updateDoc(doc(db, "poems", poemToEdit.id), poemData);
+                await updateDoc(doc(db, "users", user.uid, "poems", poemToEdit.id), poemData); // Corrected path
             } else {
-                await addDoc(collection(db, "poems"), poemData);
+                await addDoc(collection(db, "users", user.uid, "poems"), poemData); // Corrected path
             }
             resetForm();
             onClose();
