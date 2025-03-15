@@ -16,15 +16,21 @@ const Poems = () => {
   const [poemToView, setPoemToView] = useState(null);
   const [deletePoemId, setDeletePoemId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const auth = getAuth();
   const user = auth.currentUser;
 
   const poemListRef = useRef(null);
-  const [poemsVisible, setPoemsVisible] = useState(10); // Number of poems initially visible
+  const [poemsVisible, setPoemsVisible] = useState(10);
+  const loadingMore = useRef(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setPoems([]);
+      setLoading(false);
+      return;
+    }
 
     const q = query(
       collection(db, "poems"),
@@ -33,18 +39,33 @@ const Poems = () => {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setPoems(snapshot.docs.map((doc) => ({ 
-        id: doc.id, 
+      setPoems(snapshot.docs.map((doc) => ({
+        id: doc.id,
         ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate() 
+        timestamp: doc.data().timestamp?.toDate()
       })));
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, [user]);
 
+  const handleScroll = () => {
+    if (poemListRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = poemListRef.current;
+      if (scrollTop + clientHeight >= scrollHeight - 20 && !loadingMore.current && poems && poems.length > poemsVisible) {
+        loadMorePoems();
+      }
+    }
+  };
+
   const loadMorePoems = () => {
-    setPoemsVisible((prev) => prev + 5);
+    if (loadingMore.current) return;
+    loadingMore.current = true;
+    setTimeout(() => {
+      setPoemsVisible((prev) => prev + 5);
+      loadingMore.current = false;
+    }, 500);
   };
 
   const openModal = () => {
@@ -63,7 +84,7 @@ const Poems = () => {
   };
 
   const closeViewModal = () => {
-    setPoemToView(null); // Reset poemToView when closing
+    setPoemToView(null);
     setIsViewModalOpen(false);
   };
 
@@ -82,12 +103,15 @@ const Poems = () => {
 
   const formatDate = (timestamp) => {
     if (!timestamp) return '';
-    return `${timestamp.toLocaleDateString()} • ${timestamp.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return `${timestamp.toLocaleDateString()} • ${timestamp.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     })}`;
   };
-  
+
+  if (loading) {
+    return <div>Loading poems...</div>;
+  }
 
   return (
     <div>
@@ -97,7 +121,7 @@ const Poems = () => {
 
       <div className="blankblock"></div>
 
-      <div className="poem-grid" ref={poemListRef} onScroll={loadMorePoems}>
+      <div className="poem-grid" ref={poemListRef} onScroll={handleScroll}>
         {poems.slice(0, poemsVisible).map((poem) => (
           <div
             key={poem.id}
@@ -105,10 +129,12 @@ const Poems = () => {
             style={{
               '--card-accent': poem?.color || '#ff9e3d',
               backgroundColor: poem?.color ? `${poem.color}33` : '#191919aa',
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), 
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
               url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E
               %3Ccircle cx="50" cy="50" r="50" fill="%23${poem.color?.slice(1)}" /%3E%3C/svg%3E')`,
+              cursor: 'pointer', // Added this line to make the cursor a pointer
             }}
+            onClick={() => viewPoem(poem)}
           >
             <div className="light-tube"></div>
             <div className="color-bar" style={{ backgroundColor: poem.color || '#ffffff' }}></div>
@@ -125,6 +151,7 @@ const Poems = () => {
               <div className="actions-container">
                 <button
                   className="icon-button"
+                  style={{ cursor: 'pointer' }} // Added for consistency, though less crucial here
                   onClick={(e) => {
                     e.stopPropagation();
                     viewPoem(poem);
@@ -135,6 +162,7 @@ const Poems = () => {
 
                 <button
                   className="icon-button"
+                  style={{ cursor: 'pointer' }} // Added for consistency
                   onClick={(e) => {
                     e.stopPropagation();
                     editPoem(poem);
@@ -145,6 +173,7 @@ const Poems = () => {
 
                 <button
                   className="icon-button"
+                  style={{ cursor: 'pointer' }} // Added for consistency
                   onClick={(e) => {
                     e.stopPropagation();
                     confirmDelete(poem.id);
@@ -156,6 +185,13 @@ const Poems = () => {
             </div>
           </div>
         ))}
+        {poems && poems.length > poemsVisible && !loadingMore.current && (
+          <div className="load-more-indicator">Loading more poems...</div>
+        )}
+        {loadingMore.current && <div className="load-more-indicator">Fetching poems...</div>}
+        {poems && poems.length === 0 && !loading && (
+          <div className="empty-poems">No poems created yet.</div>
+        )}
       </div>
 
       <PoemModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} poemToEdit={poemToEdit} />
