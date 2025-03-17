@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import AppFAB from "./Components/AppFAB";
+
 import FloatingActionButton from "./Components/FloatingActionButton"; // Keep this import
 
 // Import your sign-in, sign-up, profile pages
@@ -76,7 +76,7 @@ const App = () => {
                 <Link to="/backup">Backup</Link>
             </nav>*/}
             <FloatingActionButton /> {/* Keep this for navigation */}
-            <AppFAB /> {/* Keep this for update notifications */}
+            
             <Routes>
                 {/* Root path ("/") -> Show calendar */}
                 <Route
