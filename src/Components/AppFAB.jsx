@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AppFAB.css';
-import './AppMenu.css'; // Import new menu styles
-import './Modal.css'; // Import new modal styles
+import './AppMenu.css';
+import './Modal.css';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const CURRENT_APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.1.0';
@@ -13,6 +13,7 @@ const AppFAB = () => {
         updateServiceWorker,
         registration,
     } = useRegisterSW({
+        immediate: false, // Disable immediate registration and automatic updates
         onNeedRefresh() {
             console.log('Service worker reports: New content available, needs refresh.');
             setUpdateAvailable(true);
@@ -20,6 +21,8 @@ const AppFAB = () => {
         onOfflineReady() {
             console.log('App is ready to work offline.');
         },
+        // You might also want to control the registration manually later if needed
+        // registerType: 'prompt', // Or 'autoUpdate' with different options
     });
 
     const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -33,7 +36,6 @@ const AppFAB = () => {
     const [notices, setNotices] = useState([
         { id: 1, title: 'Welcome to the App!', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
         { id: 2, title: 'New Features Released', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.' },
-        // We'll eventually fetch these from Firebase
     ]);
 
     useEffect(() => {
