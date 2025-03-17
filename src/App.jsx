@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import AppFAB from "./Components/AppFAB";
+import FloatingActionButton from "./Components/FloatingActionButton"; // Keep this import
 
 // Import your sign-in, sign-up, profile pages
 import SignIn from "./Components/SignIn";
@@ -8,7 +10,7 @@ import Profile from "./Components/Profile";
 import ForgotPassword from "./Components/ForgotPassword";
 import ChangePassword from "./Components/ChangePassword";
 import EditProfile from "./Components/EditProfile";
-import FloatingActionButton from "./Components/FloatingActionButton";
+// import FloatingActionButton from "./Components/FloatingActionButton"; // Already imported above
 import Backup from "./Components/Backup"; // Import the Backup component
 
 // Import your calendar stuff
@@ -73,7 +75,8 @@ const App = () => {
                 <Link to="/profile">Profile</Link> |{" "}
                 <Link to="/backup">Backup</Link>
             </nav>*/}
-            <FloatingActionButton />
+            <FloatingActionButton /> {/* Keep this for navigation */}
+            <AppFAB /> {/* Keep this for update notifications */}
             <Routes>
                 {/* Root path ("/") -> Show calendar */}
                 <Route

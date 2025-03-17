@@ -1,0 +1,55 @@
+.app-menu {
+    position: absolute;
+    bottom: 60px; /* Adjust based on your FAB's position */
+    right: 16px; /* Adjust based on your FAB's position */
+    background-color: #222; /* Dark background */
+    color: #eee; /* Light text */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    z-index: 10;
+    height: fit-content;
+    width: fit-content;
+}
+
+.app-menu-item {
+    display: block;
+    padding: 12px 16px;
+    text-align: left;
+    border: none;
+    background-color: transparent;
+    color: inherit;
+    width: 100%;
+    cursor: pointer;
+    position: relative; /* For dot positioning */
+}
+
+.app-menu-item:hover {
+    background-color: #333;
+}
+
+.app-menu-item.with-dot {
+    padding-right: 30px; /* Make space for the dot */
+}
+
+.red-dot-small {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: #f44336; /* Red */
+    border-radius: 50%;
+}
+
+.yellow-dot-small {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: #ffeb3b; /* Yellow */
+    border-radius: 50%;
+}

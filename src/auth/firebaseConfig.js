@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAo4a_TyIPJU8wyWiXUiKGwxXzmudxQY40",
-  authDomain: "tp-calendar-82aa5.firebaseapp.com",
-  projectId: "tp-calendar-82aa5",
-  storageBucket: "tp-calendar-82aa5.firebasestorage.app",
-  messagingSenderId: "729962059816",
-  appId: "1:729962059816:web:f167b66c23b3950042fd1d",
-  measurementId: "G-P59GFQ3EJB"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

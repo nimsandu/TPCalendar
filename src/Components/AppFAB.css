@@ -1,0 +1,179 @@
+.app-fab-container {
+    position: fixed;
+    top: 20px; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
+    z-index: 1000; /* Ensure it's on top of other elements */
+}
+
+.app-fab {
+    background-color: #f0f0f0; /* Adjust color */
+    border: none;
+    border-radius: 50%;
+    width: 56px; /* Standard FAB size */
+    height: 56px; /* Standard FAB size */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative; /* For the red dot */
+}
+
+.app-icon {
+    width: 30px; /* Adjust icon size */
+    height: 30px; /* Adjust icon size */
+    fill: #333; /* Adjust icon color for SVG */
+}
+
+.app-fab img.app-icon { /* For image-based favicons */
+    width: 30px;
+    height: 30px;
+}
+
+.red-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+.app-menu {
+    position: absolute;
+    top: 60px; /* Adjust based on FAB position */
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    z-index: 999;
+}
+
+.update-notification h3 {
+    margin-top: 0;
+}
+
+.update-buttons button {
+    margin-right: 10px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.update-buttons button:first-child {
+    background-color: #0984e3;
+    color: white;
+}
+
+.update-buttons button:last-child {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.update-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.update-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+}
+
+/* Existing styles remain */
+
+.app-menu {
+    position: absolute;
+    top: 60px; /* Adjust based on FAB position */
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px; /* Reduced padding for the menu */
+    z-index: 999;
+    display: flex;
+    flex-direction: column; /* Arrange items vertically */
+    gap: 5px; /* Spacing between items */
+}
+
+.app-menu-item {
+    background: none;
+    border: none;
+    padding: 8px 15px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between; /* For the yellow dot in notices */
+    align-items: center;
+    width: 200px; /* Adjust width as needed */
+}
+
+.app-menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+.update-notification {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.update-notification h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.update-notification ul {
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+
+.update-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.update-buttons button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.update-buttons button:first-child {
+    background-color: #0984e3;
+    color: white;
+}
+
+.update-buttons button:last-child {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.yellow-dot-small {
+    width: 8px;
+    height: 8px;
+    background-color: yellow;
+    border-radius: 50%;
+}
