@@ -75,47 +75,5 @@
         "Completed restructuring of databases and security (including backup functionality).",
         "Updated SignUp component."
       ]
-    },
-    {
-        "version": "B.1.7",
-        "releaseDate": "2025-03-17",
-        "notes": [
-          "Proto ALFA test one update one"
-        ]
-      },
-      {
-        "version": "B.1.8",
-        "releaseDate": "2025-03-17",
-        "notes": [
-          "Proto ALFA test two update two"
-        ]
-      },
-      {
-        "version": "B.1.9",
-        "releaseDate": "2025-03-17",
-        "notes": [
-          "Proto ALFA test three update three"
-        ]
-      },
-      {
-        "version": "B.1.91",
-        "releaseDate": "2025-03-17",
-        "notes": [
-          "Proto ALFA test three update four"
-        ]
-      },
-      {
-        "version": "B.1.92",
-        "releaseDate": "2025-03-17",
-        "notes": [
-          "Proto ALFA test three update five"
-        ]
-      },
-      {
-        "version": "B.1.93",
-        "releaseDate": "2025-03-17",
-        "notes": [
-          "Proto ALFA test three update six"
-        ]
-      }
+    }
   ]

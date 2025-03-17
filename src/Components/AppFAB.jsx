@@ -1,258 +1,260 @@
 import React, { useState, useEffect } from 'react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 import './AppFAB.css';
 import './AppMenu.css';
 import './Modal.css';
-import { useRegisterSW } from 'virtual:pwa-register/react';
 
-const CURRENT_APP_VERSION = import.meta.env.VITE_APP_VERSION || '0.1.0';
+const CURRENT_VERSION = import.meta.env.VITE_APP_VERSION || '0.1.0';
+
+const versionCompare = (a, b) => {
+  const cleanVersion = (v) => v.replace(/[^0-9.]/g, '').split('.').map(Number);
+  const _a = cleanVersion(a);
+  const _b = cleanVersion(b);
+  
+  for (let i = 0; i < Math.max(_a.length, _b.length); i++) {
+    const n1 = _a[i] || 0;
+    const n2 = _b[i] || 0;
+    if (n1 !== n2) return n1 - n2;
+  }
+  return 0;
+};
 
 const AppFAB = () => {
-    const [showAppMenu, setShowAppMenu] = useState(false);
-    const {
-        needRefresh,
-        updateServiceWorker,
-        registration,
-    } = useRegisterSW({
-        immediate: false,
-        onNeedRefresh() {
-            console.log('Service worker reports: New content available, needs refresh.');
-            setUpdateAvailable(true);
-        },
-        onOfflineReady() {
-            console.log('App is ready to work offline.');
-        },
-    });
+  const [showAppMenu, setShowAppMenu] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState({ 
+    available: false, 
+    notes: [] 
+  });
+  const [modals, setModals] = useState({
+    update: false,
+    about: false,
+    privacy: false,
+    feedback: false,
+    notices: false
+  });
+  const [notices] = useState([
+    { 
+      id: 1, 
+      title: 'Welcome to the App!', 
+      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' 
+    },
+    { 
+      id: 2, 
+      title: 'New Features Released', 
+      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' 
+    },
+  ]);
 
-    const [updateAvailable, setUpdateAvailable] = useState(false);
-    const [showUpdateModal, setShowUpdateModal] = useState(false);
-    const [versionNotes, setVersionNotes] = useState([]);
-    const [hasFetchedNotes, setHasFetchedNotes] = useState(false);
-    const [showAboutModal, setShowAboutModal] = useState(false);
-    const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-    const [showNoticesModal, setShowNoticesModal] = useState(false);
-    const [notices, setNotices] = useState([
-        { id: 1, title: 'Welcome to the App!', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-        { id: 2, title: 'New Features Released', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.' },
-    ]);
-
-    useEffect(() => {
-        const storedVersion = localStorage.getItem('appVersion');
-        if (storedVersion !== CURRENT_APP_VERSION) {
-            localStorage.setItem('appVersion', CURRENT_APP_VERSION);
-            console.log('App version in localStorage updated to:', CURRENT_APP_VERSION);
+  const { needRefresh, updateServiceWorker } = useRegisterSW({
+    immediate: true,
+    onRegisteredSW(swUrl, registration) {
+      if (!registration) return;
+      setInterval(async () => {
+        if (!registration.installing && navigator.onLine) {
+          await registration.update();
         }
-    }, []);
+      }, 60000);
+    },
+    onNeedRefresh: () => checkVersionUpdates(),
+  });
 
-    useEffect(() => {
-        console.log("AppFAB useEffect for version notes running. needRefresh:", needRefresh, "hasFetchedNotes:", hasFetchedNotes);
-        if (needRefresh && !hasFetchedNotes) {
-            setUpdateAvailable(true);
-            setHasFetchedNotes(true);
-            const fetchVersionNotes = async () => {
-                console.log("Fetching version notes...");
-                try {
-                    const response = await fetch('/versionNotes.json');
-                    console.log("Version notes response:", response);
-                    if (response.ok) {
-                        const data = await response.json();
-                        const currentVersion = localStorage.getItem('appVersion') || '0.1.0';
-                        console.log("Current appVersion from localStorage:", currentVersion);
-                        const newVersionNotes = data.filter(note => note.version > currentVersion);
-                        console.log("Filtered version notes:", newVersionNotes);
-                        setVersionNotes(newVersionNotes);
-                    } else {
-                        console.error('Failed to fetch version notes.');
-                    }
-                } catch (error) {
-                    console.error('Error fetching version notes:', error);
-                }
-            };
-            fetchVersionNotes();
-        }
-    }, [needRefresh, hasFetchedNotes]);
+  const checkVersionUpdates = async () => {
+    try {
+      const response = await fetch('/versionNotes.json');
+      if (!response.ok) throw new Error('Failed to fetch version notes');
+      
+      const notesData = await response.json();
+      const storedVersion = localStorage.getItem('appVersion') || '0.0.0';
+      
+      const newVersions = notesData.filter(note => 
+        versionCompare(note.version, storedVersion) > 0
+      );
 
-    const handleFabClick = () => {
-        setShowAppMenu(!showAppMenu);
-    };
+      setUpdateInfo({
+        available: newVersions.length > 0,
+        notes: newVersions.sort((a, b) => versionCompare(b.version, a.version))
+      });
+    } catch (error) {
+      console.error('Version check failed:', error);
+    }
+  };
 
-    const handleUpdateClick = () => {
-        setShowUpdateModal(true);
-        setShowAppMenu(false);
-    };
+  const handleUpdate = async () => {
+    try {
+      await updateServiceWorker();
+      localStorage.setItem('appVersion', CURRENT_VERSION);
+      window.location.reload();
+    } catch (error) {
+      console.error('Update failed:', error);
+      window.location.reload();
+    }
+  };
 
-    const handleUpdateNow = () => {
-        console.log('Update Now button clicked.');
-        // Perform empty cache and hard reload
-        if (window.location && window.location.reload) {
-            window.location.reload(true); // The 'true' argument forces a hard reload, bypassing the cache
-        } else {
-            console.warn('window.location.reload is not available.');
-            // Fallback to a regular reload if hard reload isn't supported
-            window.location.reload();
-        }
-        setShowUpdateModal(false);
-    };
+  const toggleModal = (modalName, state) => {
+    setModals(prev => ({ ...prev, [modalName]: state }));
+    setShowAppMenu(false);
+  };
 
-    const handleUpdateLater = () => {
-        setShowUpdateModal(false);
-    };
+  useEffect(() => {
+    const storedVersion = localStorage.getItem('appVersion');
+    if (!storedVersion || versionCompare(CURRENT_VERSION, storedVersion) > 0) {
+      localStorage.setItem('appVersion', CURRENT_VERSION);
+    }
+  }, []);
 
-    const handleAboutClick = () => {
-        setShowAboutModal(true);
-        setShowAppMenu(false);
-    };
+  return (
+    <div className="app-fab-container">
+      <button 
+        className="app-fab" 
+        onClick={() => setShowAppMenu(!showAppMenu)}
+        aria-label="Open app menu"
+      >
+        {updateInfo.available && <div className="red-dot" />}
+      </button>
 
-    const handlePrivacyClick = () => {
-        setShowPrivacyModal(true);
-        setShowAppMenu(false);
-    };
-
-    const handleFeedbackClick = () => {
-        setShowFeedbackModal(true);
-        setShowAppMenu(false);
-    };
-
-    const handleNoticesClick = () => {
-        setShowNoticesModal(true);
-        setShowAppMenu(false);
-    };
-
-    const closeModal = (setter) => {
-        setter(false);
-    };
-
-    useEffect(() => {
-        if (registration && registration.waiting) {
-            console.log('Service worker waiting to activate.', registration.waiting);
-        }
-        if (registration && registration.installing) {
-            console.log('Service worker installing.', registration.installing);
-        }
-        if (registration && registration.active) {
-            console.log('Service worker active.', registration.active);
-        }
-    }, [registration]);
-
-    return (
-        <div className="app-fab-container">
-            <button className="app-fab" onClick={handleFabClick}>
-                {updateAvailable && <div className="red-dot" />}
+      {showAppMenu && (
+        <div className="app-menu">
+          {updateInfo.available && (
+            <button 
+              className="app-menu-item with-dot"
+              onClick={() => toggleModal('update', true)}
+            >
+              Update Available
+              <div className="red-dot-small" />
             </button>
-
-            {showAppMenu && (
-                <div className="app-menu">
-                    {updateAvailable && (
-                        <button className="app-menu-item with-dot" onClick={handleUpdateClick}>
-                            Update Available
-                            <div className="red-dot-small" />
-                        </button>
-                    )}
-                    <button className="app-menu-item" onClick={handlePrivacyClick}>Privacy Policy</button>
-                    <button className="app-menu-item" onClick={handleAboutClick}>About App</button>
-                    <button className="app-menu-item" onClick={handleFeedbackClick}>Send Feedback</button>
-                    <button className="app-menu-item with-dot" onClick={handleNoticesClick}>
-                        Notices
-                        {notices.length > 0 && <div className="yellow-dot-small" />}
-                    </button>
-                </div>
-            )}
-
-            {showUpdateModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>New Updates Available!</h3>
-                        {versionNotes.length > 0 ? (
-                            <ul>
-                                {versionNotes.map((note) => (
-                                    <li key={note.version}>
-                                        <strong>Version {note.version}</strong> ({note.releaseDate}):
-                                        <ul>
-                                            {note.notes.map((item, index) => (
-                                                <li key={index}>{item}</li>
-                                            ))}
-                                        </ul>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No new version notes found.</p>
-                        )}
-                        <div className="modal-buttons">
-                            <button onClick={handleUpdateNow}>Force Update</button> {/* Changed button text */}
-                            <button onClick={() => closeModal(setShowUpdateModal)}>Update Later</button>
-                        </div>
-                        <button className="modal-close-button" onClick={() => closeModal(setShowUpdateModal)}>
-                            &times;
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {showAboutModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>About App</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae elit libero, a pharetra augue. Donec sed odio dui. Maecenas sed diam eget risus varius blandit sit amet non magna. Cras mattis consectetur purus sit amet fermentum.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                        <p><strong>Version:</strong> {CURRENT_APP_VERSION}</p>
-                        <button className="modal-close-button" onClick={() => closeModal(setShowAboutModal)}>
-                            &times;
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {showPrivacyModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>Privacy Policy</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean lacinia bibendum nulla sed consectetur. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras mattis consectetur purus sit amet fermentum. Donec id elit non mi porta gravida at eget metus.</p>
-                        <button className="modal-close-button" onClick={() => closeModal(setShowPrivacyModal)}>
-                            &times;
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {showFeedbackModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>Send Feedback</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
-                        <p>You can send your feedback to: <a href="mailto:feedback@example.com">feedback@example.com</a></p>
-                        <button className="modal-close-button" onClick={() => closeModal(setShowFeedbackModal)}>
-                            &times;
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {showNoticesModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h3>Notices</h3>
-                        {notices.length > 0 ? (
-                            <ul>
-                                {notices.map((notice) => (
-                                    <li key={notice.id}>
-                                        <h4>{notice.title}</h4>
-                                        <p>{notice.content}</p>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No new notices at this time.</p>
-                        )}
-                        <button className="modal-close-button" onClick={() => closeModal(setShowNoticesModal)}>
-                            &times;
-                        </button>
-                    </div>
-                </div>
-            )}
+          )}
+          <button className="app-menu-item" onClick={() => toggleModal('privacy', true)}>
+            Privacy Policy
+          </button>
+          <button className="app-menu-item" onClick={() => toggleModal('about', true)}>
+            About App
+          </button>
+          <button className="app-menu-item" onClick={() => toggleModal('feedback', true)}>
+            Send Feedback
+          </button>
+          <button 
+            className="app-menu-item with-dot" 
+            onClick={() => toggleModal('notices', true)}
+          >
+            Notices
+            {notices.length > 0 && <div className="yellow-dot-small" />}
+          </button>
         </div>
-    );
+      )}
+
+      {/* Update Modal */}
+      {modals.update && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>New Updates Available!</h3>
+            {updateInfo.notes.length > 0 ? (
+              updateInfo.notes.map((note) => (
+                <div key={note.version} className="version-note">
+                  <h4>Version {note.version} ({note.releaseDate})</h4>
+                  <ul>
+                    {note.notes.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            ) : (
+              <p>No new version notes found.</p>
+            )}
+            <div className="modal-buttons">
+              <button onClick={handleUpdate}>Install Update</button>
+              <button onClick={() => toggleModal('update', false)}>Later</button>
+            </div>
+            <button 
+              className="modal-close-button" 
+              onClick={() => toggleModal('update', false)}
+              aria-label="Close update modal"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* About Modal */}
+      {modals.about && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>About App</h3>
+            <p>Your application description here.</p>
+            <p><strong>Current Version:</strong> {CURRENT_VERSION}</p>
+            <button 
+              className="modal-close-button" 
+              onClick={() => toggleModal('about', false)}
+              aria-label="Close about modal"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Modal */}
+      {modals.privacy && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Privacy Policy</h3>
+            <p>Your privacy policy content here.</p>
+            <button 
+              className="modal-close-button" 
+              onClick={() => toggleModal('privacy', false)}
+              aria-label="Close privacy modal"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Modal */}
+      {modals.feedback && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Send Feedback</h3>
+            <p>Contact us at: <a href="mailto:feedback@example.com">feedback@example.com</a></p>
+            <button 
+              className="modal-close-button" 
+              onClick={() => toggleModal('feedback', false)}
+              aria-label="Close feedback modal"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Notices Modal */}
+      {modals.notices && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Notices</h3>
+            {notices.length > 0 ? (
+              notices.map((notice) => (
+                <div key={notice.id} className="notice-item">
+                  <h4>{notice.title}</h4>
+                  <p>{notice.content}</p>
+                </div>
+              ))
+            ) : (
+              <p>No current notices.</p>
+            )}
+            <button 
+              className="modal-close-button" 
+              onClick={() => toggleModal('notices', false)}
+              aria-label="Close notices modal"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default AppFAB;
