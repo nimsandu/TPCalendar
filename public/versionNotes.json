@@ -89,5 +89,12 @@
         "notes": [
           "Proto ALFA test two update two"
         ]
+      },
+      {
+        "version": "B.1.9",
+        "releaseDate": "2025-03-17",
+        "notes": [
+          "Proto ALFA test three update three"
+        ]
       }
   ]
