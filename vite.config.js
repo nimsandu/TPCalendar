@@ -26,15 +26,23 @@ export default defineConfig({
         ],
       },
       workbox: {
+        globPatterns: ['**/*.{js,css,html,png,jpg,svg}'],
         skipWaiting: false,
         clientsClaim: false,
-        importScripts: ['sw.js'], // Reference our custom SW
-        // Remove runtimeCaching from here since we handle it in sw.js
+        runtimeCaching: [
+          {
+            urlPattern: /\/versionNotes\.json/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'version-notes',
+              expiration: {
+                maxEntries: 1,
+                maxAgeSeconds: 24 * 60 * 60, // 1 day
+              },
+            },
+          }
+        ]
       },
-      strategies: 'injectManifest', // Use injectManifest strategy
-      injectManifest: {
-        injectionPoint: undefined,
-      }
     }),
   ],
 });
