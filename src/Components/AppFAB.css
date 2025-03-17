@@ -6,11 +6,11 @@
 }
 
 .app-fab {
-    background-color: #e4ff76; /* Adjust color */
+    background-color: #000000; /* Adjust color */
     border: none;
     border-radius: 50%;
-    width: 56px; /* Standard FAB size */
-    height: 56px; /* Standard FAB size */
+    width: 36px; /* Standard FAB size */
+    height: 36px; /* Standard FAB size */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: center;
