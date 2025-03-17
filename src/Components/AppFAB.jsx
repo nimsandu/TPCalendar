@@ -45,15 +45,16 @@ const AppFAB = () => {
     },
   ]);
 
-  const { needRefresh, updateServiceWorker } = useRegisterSW({
+  const { 
+    needRefresh: [needRefresh], 
+    updateServiceWorker,
+    registration 
+  } = useRegisterSW({
     immediate: true,
-    onRegisteredSW(swUrl, registration) {
-      if (!registration) return;
-      setInterval(async () => {
-        if (!registration.installing && navigator.onLine) {
-          await registration.update();
-        }
-      }, 60000);
+    onRegisteredSW(swUrl, r) {
+      if (!r) return;
+      // Check for updates every hour
+      setInterval(() => r.update(), 60 * 60 * 1000);
     },
     onNeedRefresh: () => checkVersionUpdates(),
   });
@@ -79,11 +80,23 @@ const AppFAB = () => {
     }
   };
 
-  const handleUpdate = async () => {
+  const handleUserUpdate = async () => {
     try {
-      await updateServiceWorker();
-      localStorage.setItem('appVersion', CURRENT_VERSION);
-      window.location.reload();
+      // Send skip waiting message to service worker
+      if (registration?.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        
+        // Wait for controller change then reload
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          localStorage.setItem('appVersion', CURRENT_VERSION);
+          window.location.reload();
+        });
+      } else {
+        // Fallback update
+        await updateServiceWorker();
+        localStorage.setItem('appVersion', CURRENT_VERSION);
+        window.location.reload();
+      }
     } catch (error) {
       console.error('Update failed:', error);
       window.location.reload();
@@ -101,6 +114,15 @@ const AppFAB = () => {
       localStorage.setItem('appVersion', CURRENT_VERSION);
     }
   }, []);
+
+  // Listen for service worker updates
+  useEffect(() => {
+    if (registration) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
+    }
+  }, [registration]);
 
   return (
     <div className="app-fab-container">
@@ -162,8 +184,8 @@ const AppFAB = () => {
               <p>No new version notes found.</p>
             )}
             <div className="modal-buttons">
-              <button onClick={handleUpdate}>Install Update</button>
-              <button onClick={() => toggleModal('update', false)}>Later</button>
+              <button onClick={handleUserUpdate}>Install Update Now</button>
+              <button onClick={() => toggleModal('update', false)}>Remind Me Later</button>
             </div>
             <button 
               className="modal-close-button" 
