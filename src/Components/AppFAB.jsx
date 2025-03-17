@@ -13,7 +13,7 @@ const AppFAB = () => {
         updateServiceWorker,
         registration,
     } = useRegisterSW({
-        immediate: false, // Disable immediate registration and automatic updates
+        immediate: false,
         onNeedRefresh() {
             console.log('Service worker reports: New content available, needs refresh.');
             setUpdateAvailable(true);
@@ -21,8 +21,6 @@ const AppFAB = () => {
         onOfflineReady() {
             console.log('App is ready to work offline.');
         },
-        // You might also want to control the registration manually later if needed
-        // registerType: 'prompt', // Or 'autoUpdate' with different options
     });
 
     const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -85,11 +83,13 @@ const AppFAB = () => {
 
     const handleUpdateNow = () => {
         console.log('Update Now button clicked.');
-        if (updateServiceWorker) {
-            console.log('Calling updateServiceWorker()...');
-            updateServiceWorker();
+        // Perform empty cache and hard reload
+        if (window.location && window.location.reload) {
+            window.location.reload(true); // The 'true' argument forces a hard reload, bypassing the cache
         } else {
-            console.warn('updateServiceWorker function is not available.');
+            console.warn('window.location.reload is not available.');
+            // Fallback to a regular reload if hard reload isn't supported
+            window.location.reload();
         }
         setShowUpdateModal(false);
     };
@@ -179,7 +179,7 @@ const AppFAB = () => {
                             <p>No new version notes found.</p>
                         )}
                         <div className="modal-buttons">
-                            <button onClick={handleUpdateNow}>Update Now</button>
+                            <button onClick={handleUpdateNow}>Force Update</button> {/* Changed button text */}
                             <button onClick={() => closeModal(setShowUpdateModal)}>Update Later</button>
                         </div>
                         <button className="modal-close-button" onClick={() => closeModal(setShowUpdateModal)}>
