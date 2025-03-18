@@ -1,20 +1,20 @@
 [
     {
-        "version": "A.0.1",
+        "version": "0.0.1",
         "releaseDate": "2025-02-11",
         "notes": [
           "Fist Alpha Prototype (J1)."
         ]
       },
     {
-      "version": "A.0.3",
+      "version": "0.0.3",
       "releaseDate": "2025-02-21",
       "notes": [
         "Vercel based PWA Prototype (J2)."
       ]
     },
     {
-      "version": "A.0.4",
+      "version": "0.0.4",
       "releaseDate": "2025-02-23",
       "notes": [
         "Final Prototype (J3)",
@@ -30,14 +30,14 @@
       ]
     },
     {
-      "version": "A.0.5",
+      "version": "0.0.5",
       "releaseDate": "2025-03-05",
       "notes": [
         "Updated TodaysOverview styling."
       ]
     },
     {
-      "version": "A.0.7",
+      "version": "0.0.7",
       "releaseDate": "2025-03-10",
       "notes": [
         "Initial steps for backend integration.",
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "version": "B.1.0",
+      "version": "0.1.0",
       "releaseDate": "2025-03-13",
       "notes": [
         "The Poets Calendar First Beta release.",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "version": "B.1.4",
+      "version": "0.1.4",
       "releaseDate": "2025-03-14",
       "notes": [
         "Performance improvements.",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "version": "B.1.6",
+      "version": "1.1.6",
       "releaseDate": "2025-03-17",
       "notes": [
         "Bug fixes for content editable and calendar toggle.",
