@@ -33,7 +33,6 @@ const AppFAB = () => {
     checking: false
   });
   const [isUpdating, setIsUpdating] = useState(false);
-  const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
   const [modals, setModals] = useState({
     update: false,
     about: false,
@@ -129,9 +128,6 @@ const AppFAB = () => {
     }
     
     try {
-      // Close the update modal first
-      toggleModal('update', false);
-      
       // Show updating state
       setIsUpdating(true);
       
@@ -179,9 +175,8 @@ const AppFAB = () => {
       setIsUpdating(false);
       sessionStorage.removeItem('app_updating');
       
-      // Show error message
-      setShowUpdateSuccess({ success: false, message: 'Update failed. Please try again.' });
-      setTimeout(() => setShowUpdateSuccess(false), 3000);
+      alert('The update failed. Please try again or reload the app manually.');
+      toggleModal('update', false);
     }
   };
 
@@ -196,11 +191,6 @@ const AppFAB = () => {
     setShowAppMenu(false);
   };
 
-  // Close the update success message
-  const closeUpdateSuccess = () => {
-    setShowUpdateSuccess(false);
-  };
-
   // VERSION EFFECT - On component mount
   useEffect(() => {
     // Check if we're returning from an update
@@ -208,12 +198,10 @@ const AppFAB = () => {
     if (wasUpdating) {
       // Clear the flag
       sessionStorage.removeItem('app_updating');
-      // Show success message
-      setShowUpdateSuccess({ 
-        success: true, 
-        message: 'App successfully updated to the latest version!' 
-      });
-      setTimeout(() => setShowUpdateSuccess(false), 5000);
+      // Show a success message
+      setTimeout(() => {
+        alert('App successfully updated to the latest version!');
+      }, 500);
     }
     
     // Set the current version in local storage if not set or if newer
@@ -262,23 +250,6 @@ const AppFAB = () => {
           </div>
         </div>
       )}
-      
-      {/* Update success message */}
-      {showUpdateSuccess && (
-        <div className="update-toast-container">
-          <div className={`update-toast ${showUpdateSuccess.success ? 'success' : 'error'}`}>
-            <div className="update-toast-icon">
-              {showUpdateSuccess.success ? '✓' : '✕'}
-            </div>
-            <div className="update-toast-message">
-              {showUpdateSuccess.message}
-            </div>
-            <button className="update-toast-close" onClick={closeUpdateSuccess}>
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
     
       <div className={`app-fab-container ${isRoot ? 'root-position' : 'other-position'}`}>
         <button 
@@ -286,7 +257,7 @@ const AppFAB = () => {
           onClick={() => setShowAppMenu(!showAppMenu)}
           aria-label="Open app menu"
         >
-          {updateInfo.available && <div className="red-dot" />} ⬆️
+          {updateInfo.available && <div className="red-dot" />} 🔔
         </button>
     
         {showAppMenu && (
