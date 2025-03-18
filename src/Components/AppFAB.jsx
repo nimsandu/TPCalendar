@@ -53,28 +53,34 @@ const AppFAB = () => {
     },
   ]);
 
-  // MODIFIED SERVICE WORKER SETUP
+  // CUSTOM SERVICE WORKER REGISTRATION
   const { 
-    needRefresh: [needRefresh, setNeedRefresh], 
     updateServiceWorker,
-    registration 
+    needRefresh: [needRefresh, setNeedRefresh],
+    offlineReady: [offlineReady, setOfflineReady],
+    registration
   } = useRegisterSW({
-    immediate: true,
-    onRegisteredSW(swUrl, r) {
+    onRegistered(r) {
+      // Skip the onNeedRefresh hook by setting immediate to false
+      // and registering our own update check
       if (!r) return;
-      // Check for updates hourly, but don't apply them automatically
+      
+      // Check for updates periodically but don't show default prompt
       setInterval(() => {
         console.log("Checking for updates...");
-        setUpdateInfo(prev => ({ ...prev, checking: true }));
-        r.update();
-      }, 60 * 60 * 1000);
+        r.update().then(() => {
+          // Instead of showing the system prompt, we'll check ourselves
+          if (r.waiting) {
+            console.log("Update detected manually");
+            setUpdateInfo(prev => ({ ...prev, available: true }));
+          }
+          checkVersionUpdates();
+        });
+      }, 60 * 60 * 1000); // Check every hour
     },
-    onNeedRefresh: () => {
-      // Just flag that an update is available, but don't refresh automatically
-      console.log("Update available!");
-      checkVersionUpdates();
-      // Don't call updateServiceWorker() here - let the user decide
-    },
+    onRegisterError(error) {
+      console.error('SW registration error', error);
+    }
   });
 
   // VERSION CHECK
@@ -91,10 +97,13 @@ const AppFAB = () => {
       const newVersions = notesData.filter(note => 
         versionCompare(note.version, storedVersion) > 0
       );
+      
+      // Check if there's a waiting service worker
+      const hasWaitingSW = registration?.waiting !== null;
 
-      // Set update info but don't auto-update
+      // Set update info
       setUpdateInfo({
-        available: newVersions.length > 0 || needRefresh,
+        available: newVersions.length > 0 || hasWaitingSW,
         notes: newVersions.sort((a, b) => versionCompare(b.version, a.version)),
         checking: false
       });
@@ -141,7 +150,7 @@ const AppFAB = () => {
       // Set a flag that we're in the middle of an update
       sessionStorage.setItem('app_updating', 'true');
       
-      // Different handling based on service worker state
+      // If there's a waiting service worker, activate it
       if (registration?.waiting) {
         // Create a promise that resolves when the controller changes
         const controllerChangePromise = new Promise(resolve => {
@@ -161,13 +170,8 @@ const AppFAB = () => {
         // Reload the page
         window.location.reload();
       } else {
-        // Use the update function from the hook
-        await updateServiceWorker(true); // true = skip waiting
-        
-        // Reload after a short delay to ensure the new SW is active
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        // No waiting service worker, just reload
+        window.location.reload();
       }
     } catch (error) {
       console.error('Update failed:', error);
@@ -212,17 +216,15 @@ const AppFAB = () => {
     
     // Initial version check on mount
     checkVersionUpdates();
-  }, []);
 
-  // Watch for needRefresh changes and update our updateInfo state
-  useEffect(() => {
-    if (needRefresh) {
+    // Handle any existing service worker updates
+    if (registration?.waiting) {
       setUpdateInfo(prev => ({
         ...prev,
         available: true
       }));
     }
-  }, [needRefresh]);
+  }, [registration]);
 
   // Check for updates when the app becomes visible again
   useEffect(() => {
@@ -237,6 +239,17 @@ const AppFAB = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
+
+  // Reset the built-in PWA prompts
+  useEffect(() => {
+    // Reset the built-in PWA hooks to prevent auto-prompts
+    if (needRefresh) {
+      setNeedRefresh(false);
+    }
+    if (offlineReady) {
+      setOfflineReady(false);
+    }
+  }, [needRefresh, offlineReady, setNeedRefresh, setOfflineReady]);
 
   return (
     <>

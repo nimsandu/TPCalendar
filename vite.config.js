@@ -6,12 +6,13 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt', // Keep as 'prompt' to avoid auto-update
+      registerType: 'autoUpdate', // Change to autoUpdate but we'll handle it manually
+      injectRegister: null, // Don't inject the register script
       manifest: {
         name: 'The Poets Calendar',
         short_name: 'TPCalendar',
         description: 'tp calendar beta preview v0.1',
-        theme_color: '#000000',
+        theme_color: '#323232',
         icons: [
           {
             src: '/pwa-icon-192x192.png',
@@ -37,8 +38,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,svg}'],
-        skipWaiting: false, // We'll handle this manually
-        clientsClaim: true, // This helps with faster activation
+        skipWaiting: false, // Don't skip waiting
+        clientsClaim: true,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
