@@ -88,7 +88,7 @@ const AppFAB = () => {
     try {
       setUpdateInfo(prev => ({ ...prev, checking: true }));
       
-      // First, check if there's a waiting service worker
+      // First, check if there's a waiting service worker that indicates a new version
       const hasWaitingSW = registration?.waiting !== null;
       
       // Then check version notes
@@ -99,8 +99,10 @@ const AppFAB = () => {
           const notesData = await response.json();
           const storedVersion = localStorage.getItem('appVersion') || '0.0.0';
           
+          // Only consider versions newer than our current one
+          // Important fix: Compare against CURRENT_VERSION not just storedVersion
           newVersions = notesData.filter(note => 
-            versionCompare(note.version, storedVersion) > 0
+            versionCompare(note.version, CURRENT_VERSION) > 0
           ).sort((a, b) => versionCompare(b.version, a.version));
         }
       } catch (error) {
@@ -110,7 +112,13 @@ const AppFAB = () => {
       
       // Set update info - only available if there's a new version or waiting SW
       const hasUpdate = newVersions.length > 0 || hasWaitingSW;
-      console.log("Update status:", { hasWaitingSW, notesLength: newVersions.length, hasUpdate });
+      console.log("Update status:", { 
+        currentVersion: CURRENT_VERSION,
+        hasWaitingSW, 
+        notesLength: newVersions.length, 
+        hasUpdate,
+        newVersions
+      });
       
       setUpdateInfo({
         available: hasUpdate,
@@ -244,10 +252,10 @@ const AppFAB = () => {
       // Check if there's a waiting service worker on registration change
       if (registration.waiting) {
         console.log("Detected waiting service worker");
-        setUpdateInfo(prev => ({
-          ...prev,
-          available: true
-        }));
+        
+        // Fix: Only set update available if the waiting service worker 
+        // actually represents a new version (additional check)
+        checkVersionUpdates();
       }
     }
   }, [registration]);
