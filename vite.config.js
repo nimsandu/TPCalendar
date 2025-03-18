@@ -31,7 +31,7 @@ export default defineConfig({
           },
         ],
         display: 'standalone',
-        background_color: '#ffffff',
+        background_color: '#323232',
         start_url: '/',
         orientation: 'portrait',
       },

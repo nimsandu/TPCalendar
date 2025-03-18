@@ -89,5 +89,12 @@
       "notes": [
         "ProtoDELTA J1 T2"
       ]
+    },
+    {
+      "version": "B.1.9",
+      "releaseDate": "2025-03-18",
+      "notes": [
+        "ProtoDELTA Finalizer"
+      ]
     }
   ]
