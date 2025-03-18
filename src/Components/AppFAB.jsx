@@ -5,7 +5,7 @@ import './AppFAB.css';
 import './AppMenu.css';
 import './Modal.css';
 
-const CURRENT_VERSION = import.meta.env.VITE_APP_VERSION || '0.1.0';
+const CURRENT_VERSION = import.meta.env.VITE_APP_VERSION || '0.0.1';
 
 const versionCompare = (a, b) => {
   const cleanVersion = (v) => v.replace(/[^0-9.]/g, '').split('.').map(Number);
@@ -53,89 +53,67 @@ const AppFAB = () => {
     },
   ]);
 
-  // CUSTOM SERVICE WORKER REGISTRATION
+  // MODIFIED SERVICE WORKER SETUP
   const {
-    updateServiceWorker,
     needRefresh: [needRefresh, setNeedRefresh],
-    offlineReady: [offlineReady, setOfflineReady],
+    updateServiceWorker,
     registration
   } = useRegisterSW({
-    onRegistered(r) {
+    immediate: true,
+    onRegisteredSW(swUrl, r) {
       if (!r) return;
-
-      // Check for updates periodically but don't show default prompt
+      // Check for updates hourly, but don't apply them automatically
       setInterval(() => {
-        console.log("Checking for updates (periodic)...");
-        checkVersionUpdates();
-      }, 60 * 60 * 1000); // Check every hour
-
-      // Initial check after registration
-      checkVersionUpdates();
+        console.log("Checking for updates...");
+        setUpdateInfo(prev => ({ ...prev, checking: true }));
+        r.update();
+      }, 60 * 60 * 1000);
     },
-    onRegisterError(error) {
-      console.error('SW registration error', error);
-    }
+    onNeedRefresh: () => {
+      // Just flag that an update is available, but don't refresh automatically
+      console.log("Update available!");
+      checkVersionUpdates();
+      // Don't call updateServiceWorker() here - let the user decide
+    },
   });
 
   // VERSION CHECK
   const checkVersionUpdates = async () => {
-    if (updateInfo.checking) return;
-    setUpdateInfo(prev => ({ ...prev, checking: true }));
-
-    let hasWaitingSW = registration?.waiting !== null;
-    let newVersions = [];
-
     try {
-      const response = await fetch('/versionNotes.json?' + new Date().getTime());
-      if (response.ok) {
-        const notesData = await response.json();
-        const storedVersion = localStorage.getItem('appVersion') || '0.0.0';
+      setUpdateInfo(prev => ({ ...prev, checking: true }));
 
-        newVersions = notesData.filter(note =>
-          versionCompare(note.version, CURRENT_VERSION) > 0
-        ).sort((a, b) => versionCompare(b.version, a.version));
+      const response = await fetch('/versionNotes.json');
+      if (!response.ok) throw new Error('Failed to fetch version notes');
 
-        console.log("Version Notes:", notesData);
-        console.log("Stored Version:", storedVersion);
-        console.log("New Versions Found:", newVersions);
-      } else {
-        console.warn("Failed to fetch version notes:", response.status);
-      }
+      const notesData = await response.json();
+      const storedVersion = localStorage.getItem('appVersion') || '0.0.0';
+
+      const newVersions = notesData.filter(note =>
+        versionCompare(note.version, storedVersion) > 0
+      );
+
+      // Set update info but don't auto-update
+      setUpdateInfo({
+        available: newVersions.length > 0 || needRefresh,
+        notes: newVersions.sort((a, b) => versionCompare(b.version, a.version)),
+        checking: false
+      });
     } catch (error) {
-      console.error('Version notes fetch failed:', error);
+      console.error('Version check failed:', error);
+      setUpdateInfo(prev => ({ ...prev, checking: false }));
     }
-
-    const hasNewVersionNotes = newVersions.length > 0;
-    const hasUpdate = hasNewVersionNotes || hasWaitingSW;
-
-    console.log("Update Status:", {
-      currentVersion: CURRENT_VERSION,
-      hasWaitingSW,
-      notesLength: newVersions.length,
-      hasUpdate,
-      newVersions
-    });
-
-    setUpdateInfo({
-      available: hasUpdate,
-      notes: newVersions,
-      checking: false
-    });
   };
 
   // Check for updates manually (can be triggered by user)
   const checkForUpdates = () => {
+    // If already checking, don't start another check
     if (updateInfo.checking) return;
-    setUpdateInfo(prev => ({ ...prev, checking: true }));
+
     if (registration) {
-      registration.update()
-        .then(() => {
-          checkVersionUpdates();
-        })
-        .catch(error => {
-          console.error('Update check failed:', error);
-          setUpdateInfo(prev => ({ ...prev, checking: false }));
-        });
+      setUpdateInfo(prev => ({ ...prev, checking: true }));
+      registration.update().then(() => {
+        checkVersionUpdates();
+      });
     } else {
       checkVersionUpdates();
     }
@@ -143,45 +121,60 @@ const AppFAB = () => {
 
   // IMPROVED UPDATE HANDLER
   const handleUserUpdate = async () => {
+    // If no updates are available, just close the modal
     if (!updateInfo.available) {
       toggleModal('update', false);
       return;
     }
 
     try {
+      // Show updating state
       setIsUpdating(true);
 
+      // Update the stored version before reload
       const latestVersion = updateInfo.notes.length > 0
         ? updateInfo.notes[0].version
         : CURRENT_VERSION;
 
       localStorage.setItem('appVersion', latestVersion);
+
+      // Set a flag that we're in the middle of an update
       sessionStorage.setItem('app_updating', 'true');
 
+      // Different handling based on service worker state
       if (registration?.waiting) {
+        // Create a promise that resolves when the controller changes
         const controllerChangePromise = new Promise(resolve => {
           navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
         });
 
+        // Tell the waiting service worker to activate
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
 
-        try {
-          const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Update timeout')), 5000)
-          );
+        // Wait for the controller change (with a timeout)
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Update timeout')), 5000)
+        );
 
-          await Promise.race([controllerChangePromise, timeoutPromise]);
-        } catch (error) {
-          console.warn("Controller change timeout, attempting reload anyway");
-        }
+        await Promise.race([controllerChangePromise, timeoutPromise]);
+
+        // Reload the page
         window.location.reload();
       } else {
-        window.location.reload();
+        // Use the update function from the hook
+        await updateServiceWorker(true); // true = skip waiting
+
+        // Reload after a short delay to ensure the new SW is active
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       }
     } catch (error) {
       console.error('Update failed:', error);
+      // Reset updating state
       setIsUpdating(false);
       sessionStorage.removeItem('app_updating');
+
       alert('The update failed. Please try again or reload the app manually.');
       toggleModal('update', false);
     }
@@ -189,40 +182,47 @@ const AppFAB = () => {
 
   // MODAL TOGGLE
   const toggleModal = (modalName, state) => {
+    // If opening the update modal, check for updates first
     if (modalName === 'update' && state === true) {
       checkForUpdates();
     }
+
     setModals(prev => ({ ...prev, [modalName]: state }));
     setShowAppMenu(false);
   };
 
   // VERSION EFFECT - On component mount
   useEffect(() => {
+    // Check if we're returning from an update
     const wasUpdating = sessionStorage.getItem('app_updating') === 'true';
     if (wasUpdating) {
+      // Clear the flag
       sessionStorage.removeItem('app_updating');
+      // Show a success message
       setTimeout(() => {
         alert('App successfully updated to the latest version!');
       }, 500);
     }
 
+    // Set the current version in local storage if not set or if newer
     const storedVersion = localStorage.getItem('appVersion');
     if (!storedVersion || versionCompare(CURRENT_VERSION, storedVersion) > 0) {
       localStorage.setItem('appVersion', CURRENT_VERSION);
     }
 
-    // Initial version check on mount after a small delay
-    setTimeout(checkVersionUpdates, 1000);
+    // Initial version check on mount
+    checkVersionUpdates();
   }, []);
 
-  // Watch for registration changes
+  // Watch for needRefresh changes and update our updateInfo state
   useEffect(() => {
-    if (registration?.waiting) {
-      console.log("Detected waiting service worker");
-      // Re-check versions when a waiting service worker is detected
-      checkVersionUpdates();
+    if (needRefresh) {
+      setUpdateInfo(prev => ({
+        ...prev,
+        available: true
+      }));
     }
-  }, [registration]);
+  }, [needRefresh]);
 
   // Check for updates when the app becomes visible again
   useEffect(() => {
@@ -237,18 +237,6 @@ const AppFAB = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
-
-  // Reset the built-in PWA prompts - we'll handle them ourselves
-  useEffect(() => {
-    if (needRefresh) {
-      console.log("needRefresh detected, handling manually");
-      setNeedRefresh(false);
-      checkVersionUpdates(); // Recheck since something triggered needRefresh
-    }
-    if (offlineReady) {
-      setOfflineReady(false);
-    }
-  }, [needRefresh, offlineReady, setNeedRefresh, setOfflineReady]);
 
   return (
     <>

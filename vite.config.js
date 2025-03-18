@@ -12,7 +12,7 @@ export default defineConfig({
         name: 'The Poets Calendar',
         short_name: 'TPCalendar',
         description: 'tp calendar beta preview v0.1',
-        theme_color: '#323232',
+        theme_color: '#000000',
         icons: [
           {
             src: '/pwa-icon-192x192.png',
@@ -38,8 +38,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,svg}'],
-        skipWaiting: false, // Don't skip waiting
-        clientsClaim: true,
+        skipWaiting: false, // We'll handle this manually
+        clientsClaim: true, // This helps with faster activation
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
