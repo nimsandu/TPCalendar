@@ -89,5 +89,12 @@
       "notes": [
         "ProtoBETA J2 T1 RoleBack"
       ]
+    },
+    {
+      "version": "B.1.72",
+      "releaseDate": "2025-03-17",
+      "notes": [
+        "ProtoBETA J3 T1"
+      ]
     }
   ]
