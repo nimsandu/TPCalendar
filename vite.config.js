@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt', // Change from 'autoUpdate' to 'prompt'
+      registerType: 'autoUpdate', // Changed from 'prompt' to 'autoUpdate' for better update handling
       manifest: {
         name: 'The Poets Calendar',
         short_name: 'TPCalendar',
@@ -23,12 +23,23 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
           },
+          {
+            src: '/pwa-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
         ],
+        display: 'standalone',
+        background_color: '#ffffff',
+        start_url: '/',
+        orientation: 'portrait',
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,svg}'],
-        skipWaiting: false, // This setting is good
-        clientsClaim: false, // This setting is good
+        skipWaiting: false, // We'll handle this manually
+        clientsClaim: true, // This helps with faster activation
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /\/versionNotes\.json/,
@@ -37,12 +48,51 @@ export default defineConfig({
               cacheName: 'version-notes',
               expiration: {
                 maxEntries: 1,
-                maxAgeSeconds: 24 * 60 * 60, // 1 day
+                maxAgeSeconds: 3600, // 1 hour for faster updates
               },
             },
-          }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+            },
+          },
         ]
       },
+      devOptions: {
+        enabled: true
+      }
     }),
   ],
 });
