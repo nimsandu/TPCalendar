@@ -75,5 +75,12 @@
         "Completed restructuring of databases and security (including backup functionality).",
         "Updated SignUp component."
       ]
+    },
+    {
+      "version": "B.1.7",
+      "releaseDate": "2025-03-18",
+      "notes": [
+        "ProtoDELTA J1 T1"
+      ]
     }
   ]
