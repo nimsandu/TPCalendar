@@ -257,7 +257,7 @@ const AppFAB = () => {
           onClick={() => setShowAppMenu(!showAppMenu)}
           aria-label="Open app menu"
         >
-          {updateInfo.available && <div className="red-dot" />} 🕭
+          {updateInfo.available && <div className="red-dot" />} 🔔
         </button>
     
         {showAppMenu && (

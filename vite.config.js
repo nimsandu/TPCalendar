@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate', // Changed from 'prompt' to 'autoUpdate' for better update handling
+      registerType: 'prompt', // Keep as 'prompt' to avoid auto-update
       manifest: {
         name: 'The Poets Calendar',
         short_name: 'TPCalendar',
