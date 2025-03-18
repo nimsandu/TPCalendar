@@ -65,7 +65,7 @@
       ]
     },
     {
-      "version": "1.1.6",
+      "version": "0.1.6",
       "releaseDate": "2025-03-17",
       "notes": [
         "Bug fixes for content editable and calendar toggle.",
