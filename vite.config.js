@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt', // Change from 'autoUpdate' to 'prompt'
       manifest: {
         name: 'The Poets Calendar',
         short_name: 'TPCalendar',
@@ -27,8 +27,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,jpg,svg}'],
-        skipWaiting: false,
-        clientsClaim: false,
+        skipWaiting: false, // This setting is good
+        clientsClaim: false, // This setting is good
         runtimeCaching: [
           {
             urlPattern: /\/versionNotes\.json/,

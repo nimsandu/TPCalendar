@@ -5,19 +5,6 @@
     z-index: 1000; /* Ensure it's on top of other elements */
 }
 
-.app-fab {
-    background-color: #595959; /* Adjust color */
-    border: none;
-    border-radius: 50%;
-    width: 36px; /* Standard FAB size */
-    height: 36px; /* Standard FAB size */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    position: relative; /* For the red dot */
-}
 
 .app-icon {
     width: 30px; /* Adjust icon size */
@@ -177,3 +164,45 @@
     background-color: yellow;
     border-radius: 50%;
 }
+
+/* AppFAB.css */
+.app-fab-container {
+    position: fixed;
+    right: 20px;
+    z-index: 1000;
+}
+
+.app-fab-container.root-position {
+    top: 20px;
+}
+
+.app-fab-container.other-position {
+    bottom: 20px;
+}
+
+.app-fab {
+    background-color: #5959594f;
+    backdrop-filter: blur(12px);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.red-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+/* Keep the rest of your existing CSS styles below */

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { useLocation } from 'react-router-dom';
 import './AppFAB.css';
 import './AppMenu.css';
 import './Modal.css';
@@ -20,10 +21,16 @@ const versionCompare = (a, b) => {
 };
 
 const AppFAB = () => {
+  // ROUTE DETECTION
+  const location = useLocation();
+  const isRoot = location.pathname === '/';
+
+  // STATE
   const [showAppMenu, setShowAppMenu] = useState(false);
   const [updateInfo, setUpdateInfo] = useState({ 
     available: false, 
-    notes: [] 
+    notes: [],
+    checking: false
   });
   const [modals, setModals] = useState({
     update: false,
@@ -45,22 +52,35 @@ const AppFAB = () => {
     },
   ]);
 
+  // MODIFIED SERVICE WORKER SETUP
   const { 
-    needRefresh: [needRefresh], 
+    needRefresh: [needRefresh, setNeedRefresh], 
     updateServiceWorker,
     registration 
   } = useRegisterSW({
     immediate: true,
     onRegisteredSW(swUrl, r) {
       if (!r) return;
-      // Check for updates every hour
-      setInterval(() => r.update(), 60 * 60 * 1000);
+      // Check for updates hourly, but don't apply them automatically
+      setInterval(() => {
+        console.log("Checking for updates...");
+        setUpdateInfo(prev => ({ ...prev, checking: true }));
+        r.update();
+      }, 60 * 60 * 1000);
     },
-    onNeedRefresh: () => checkVersionUpdates(),
+    onNeedRefresh: () => {
+      // Just flag that an update is available, but don't refresh automatically
+      console.log("Update available!");
+      checkVersionUpdates();
+      // Don't call updateServiceWorker() here - let the user decide
+    },
   });
 
+  // VERSION CHECK
   const checkVersionUpdates = async () => {
     try {
+      setUpdateInfo(prev => ({ ...prev, checking: true }));
+      
       const response = await fetch('/versionNotes.json');
       if (!response.ok) throw new Error('Failed to fetch version notes');
       
@@ -71,80 +91,137 @@ const AppFAB = () => {
         versionCompare(note.version, storedVersion) > 0
       );
 
+      // Set update info but don't auto-update
       setUpdateInfo({
-        available: newVersions.length > 0,
-        notes: newVersions.sort((a, b) => versionCompare(b.version, a.version))
+        available: newVersions.length > 0 || needRefresh,
+        notes: newVersions.sort((a, b) => versionCompare(b.version, a.version)),
+        checking: false
       });
     } catch (error) {
       console.error('Version check failed:', error);
+      setUpdateInfo(prev => ({ ...prev, checking: false }));
     }
   };
 
+  // Check for updates manually (can be triggered by user)
+  const checkForUpdates = () => {
+    // If already checking, don't start another check
+    if (updateInfo.checking) return;
+    
+    if (registration) {
+      setUpdateInfo(prev => ({ ...prev, checking: true }));
+      registration.update().then(() => {
+        checkVersionUpdates();
+      });
+    } else {
+      checkVersionUpdates();
+    }
+  };
+
+  // MODIFIED UPDATE HANDLER - Only called when user clicks "Install Update Now"
   const handleUserUpdate = async () => {
+    // If no updates are available, just close the modal
+    if (!updateInfo.available) {
+      toggleModal('update', false);
+      return;
+    }
+    
     try {
-      // Send skip waiting message to service worker
+      // If there's a waiting service worker, activate it
       if (registration?.waiting) {
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-        
-        // Wait for controller change then reload
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
+        // Set up the reload listener before sending the message
+        const reloadListener = () => {
+          console.log("Controller changed, reloading page...");
           localStorage.setItem('appVersion', CURRENT_VERSION);
           window.location.reload();
-        });
+        };
+        
+        // Add listener for when the new service worker takes control
+        navigator.serviceWorker.addEventListener('controllerchange', reloadListener, { once: true });
+        
+        // Tell the waiting service worker to activate
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       } else {
-        // Fallback update
-        await updateServiceWorker();
+        // Otherwise use the update function from the hook
+        await updateServiceWorker(true); // true = skip waiting
         localStorage.setItem('appVersion', CURRENT_VERSION);
-        window.location.reload();
       }
+      
+      // Close the modal
+      toggleModal('update', false);
     } catch (error) {
       console.error('Update failed:', error);
-      window.location.reload();
+      // Don't force reload on error
+      toggleModal('update', false);
     }
   };
 
+  // MODAL TOGGLE
   const toggleModal = (modalName, state) => {
+    // If opening the update modal, check for updates first
+    if (modalName === 'update' && state === true) {
+      checkForUpdates();
+    }
+    
     setModals(prev => ({ ...prev, [modalName]: state }));
     setShowAppMenu(false);
   };
 
+  // VERSION EFFECT - On component mount
   useEffect(() => {
+    // Set the current version in local storage if not set or if newer
     const storedVersion = localStorage.getItem('appVersion');
     if (!storedVersion || versionCompare(CURRENT_VERSION, storedVersion) > 0) {
       localStorage.setItem('appVersion', CURRENT_VERSION);
     }
+    
+    // Initial version check on mount
+    checkVersionUpdates();
   }, []);
 
-  // Listen for service worker updates
+  // Watch for needRefresh changes and update our updateInfo state
   useEffect(() => {
-    if (registration) {
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
-      });
+    if (needRefresh) {
+      setUpdateInfo(prev => ({
+        ...prev,
+        available: true
+      }));
     }
-  }, [registration]);
+  }, [needRefresh]);
+
+  // Check for updates when the app becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkVersionUpdates();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   return (
-    <div className="app-fab-container">
+    <div className={`app-fab-container ${isRoot ? 'root-position' : 'other-position'}`}>
       <button 
         className="app-fab" 
         onClick={() => setShowAppMenu(!showAppMenu)}
         aria-label="Open app menu"
       >
-        {updateInfo.available && <div className="red-dot" />}
+        {updateInfo.available && <div className="red-dot" />} 🔔
       </button>
-
+  
       {showAppMenu && (
         <div className="app-menu">
-          {updateInfo.available && (
-            <button 
-              className="app-menu-item with-dot"
-              onClick={() => toggleModal('update', true)}
-            >
-              Update Available
-              <div className="red-dot-small" />
-            </button>
-          )}
+          <button 
+            className={`app-menu-item ${updateInfo.available ? 'with-dot' : ''}`}
+            onClick={() => toggleModal('update', true)}
+          >
+            Check for Updates
+            {updateInfo.available && <div className="red-dot-small" />}
+          </button>
           <button className="app-menu-item" onClick={() => toggleModal('privacy', true)}>
             Privacy Policy
           </button>
@@ -163,30 +240,48 @@ const AppFAB = () => {
           </button>
         </div>
       )}
-
+  
       {/* Update Modal */}
       {modals.update && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>New Updates Available!</h3>
-            {updateInfo.notes.length > 0 ? (
-              updateInfo.notes.map((note) => (
-                <div key={note.version} className="version-note">
-                  <h4>Version {note.version} ({note.releaseDate})</h4>
-                  <ul>
-                    {note.notes.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
+            <h3>Updates</h3>
+            
+            {updateInfo.checking ? (
+              <p>Checking for updates...</p>
+            ) : updateInfo.available ? (
+              <>
+                <h4>New Updates Available!</h4>
+                {updateInfo.notes.length > 0 ? (
+                  updateInfo.notes.map((note) => (
+                    <div key={note.version} className="version-note">
+                      <h4>Version {note.version} ({note.releaseDate})</h4>
+                      <ul>
+                        {note.notes.map((item, index) => (
+                          <li key={index}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))
+                ) : (
+                  <p>A new version of the app is available.</p>
+                )}
+                <div className="modal-buttons">
+                  <button onClick={handleUserUpdate}>Install Update Now</button>
+                  <button onClick={() => toggleModal('update', false)}>Remind Me Later</button>
                 </div>
-              ))
+              </>
             ) : (
-              <p>No new version notes found.</p>
+              <>
+                <p>Your app is up to date!</p>
+                <p><strong>Current Version:</strong> {CURRENT_VERSION}</p>
+                <div className="modal-buttons">
+                  <button onClick={checkForUpdates}>Check Again</button>
+                  <button onClick={() => toggleModal('update', false)}>Close</button>
+                </div>
+              </>
             )}
-            <div className="modal-buttons">
-              <button onClick={handleUserUpdate}>Install Update Now</button>
-              <button onClick={() => toggleModal('update', false)}>Remind Me Later</button>
-            </div>
+            
             <button 
               className="modal-close-button" 
               onClick={() => toggleModal('update', false)}
@@ -197,7 +292,7 @@ const AppFAB = () => {
           </div>
         </div>
       )}
-
+  
       {/* About Modal */}
       {modals.about && (
         <div className="modal-overlay">
@@ -215,7 +310,7 @@ const AppFAB = () => {
           </div>
         </div>
       )}
-
+  
       {/* Privacy Modal */}
       {modals.privacy && (
         <div className="modal-overlay">
@@ -232,7 +327,7 @@ const AppFAB = () => {
           </div>
         </div>
       )}
-
+  
       {/* Feedback Modal */}
       {modals.feedback && (
         <div className="modal-overlay">
@@ -249,7 +344,7 @@ const AppFAB = () => {
           </div>
         </div>
       )}
-
+  
       {/* Notices Modal */}
       {modals.notices && (
         <div className="modal-overlay">
