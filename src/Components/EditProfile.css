@@ -1,21 +1,38 @@
-.apple-back-button {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: transparent;
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('../images/bg3.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #fff;
+  }
+
+.responsive-back-button {
+    background: none;
     border: none;
-    color: #ffffff; /* Or any color you prefer */
-    font-size: 16px;
+    color: #f4f4f5;
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 8px 12px;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    transition: opacity 0.3s ease;
-    transform: scale(0.8); /* Slightly smaller for a cleaner look */
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
 }
 
-.apple-back-button:hover {
-    opacity: 0.7;
+.responsive-back-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
+
+.responsive-back-button svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
 

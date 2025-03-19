@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Modal from "react-modal";
-import { doc, getDoc } from "firebase/firestore"; // Import getDoc and doc
-import { db } from "../auth/firebaseConfig"; // Import your db instance
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../auth/firebaseConfig";
 import "./AuthStyles.css";
 import Loader from "./Loader";
 
@@ -18,6 +18,15 @@ const SignIn = () => {
     const [errorMessage, setErrorMessage] = useState(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
+
+    // Apply background image when component mounts
+    useEffect(() => {
+        document.body.className = "signin-page";
+        // Cleanup function to reset when component unmounts
+        return () => {
+            document.body.className = "";
+        };
+    }, []);
 
     const handleSignIn = async () => {
         const auth = getAuth();

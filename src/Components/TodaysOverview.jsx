@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./TodaysOverview.css";
 
-// 1️⃣ Import your monthly portrait images
+// Import your monthly portrait images
 import janImg from "../images/jan_mob.jpeg";
 import febImg from "../images/feb_mob.jpeg";
 import marImg from "../images/mar_mob.jpeg";
@@ -17,7 +17,7 @@ import novImg from "../images/nov_mob.jpeg";
 import decImg from "../images/dec_mob.jpeg";
 
 const TodaysOverview = () => {
-  // 2️⃣ Map each month index to the imported portrait image
+  // Map each month index to the imported portrait image
   const monthImages = {
     0: `url(${janImg})`,
     1: `url(${febImg})`,
@@ -48,33 +48,33 @@ const TodaysOverview = () => {
     "December",
   ];
 
-  // 3️⃣ States for background & month name
+  // States for background & month name
   const [cardBg, setCardBg] = useState("");
   const [monthName, setMonthName] = useState("");
 
-  // 4️⃣ State for random advice from adviceslip.com
+  // State for random advice from adviceslip.com
   const [advice, setAdvice] = useState(null);
   const [adviceError, setAdviceError] = useState(null);
 
-  // 5️⃣ Current date/time
+  // Current date/time
   const today = new Date();
   const realMonth = today.getMonth();
   const dayName = today.toLocaleString("en-US", { weekday: "long" });
   const dateNum = today.getDate();
   const yearNum = today.getFullYear();
 
-  // 6️⃣ On mount, set the background & month name
+  // On mount, set the background & month name
   useEffect(() => {
     setCardBg(monthImages[realMonth]);
     setMonthName(monthsOfYear[realMonth]);
   }, [realMonth, monthImages]);
 
-  // 7️⃣ Fetch a random advice from adviceslip.com
+  // Fetch a random advice from adviceslip.com
   useEffect(() => {
     const fetchAdvice = async () => {
       try {
         const res = await axios.get("https://api.adviceslip.com/advice");
-        setAdvice(res.data.slip.advice); // Access the advice from the response
+        setAdvice(res.data.slip.advice);
       } catch (err) {
         console.error(err);
         setAdviceError("Failed to fetch advice. Please try again later.");
@@ -83,7 +83,7 @@ const TodaysOverview = () => {
     fetchAdvice();
   }, []);
 
-  // 8️⃣ Render logic
+  // Render logic
   if (adviceError) {
     return (
       <div className="today-portrait-card" style={{ backgroundImage: cardBg }}>
@@ -102,7 +102,9 @@ const TodaysOverview = () => {
       }}
     >
       {/* Month banner at the top */}
-      {/*<h2 className="month-banner">{monthName}</h2>*/}
+      <div className="top-section">
+        {/* You can add month name here if desired */}
+      </div>
 
       {/* Date info in the middle */}
       <div className="date-info">
@@ -116,7 +118,7 @@ const TodaysOverview = () => {
       {/* Advice section at the bottom */}
       <div className="quote-section">
         {advice ? (
-          <p className="quote-text">“{advice}”</p>
+          <p className="quote-text">"{advice}"</p>
         ) : (
           <p>Loading advice...</p>
         )}

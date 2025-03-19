@@ -11,6 +11,7 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport } from '@fortawesome/free-solid-svg-icons';
 
+
 const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal and onEditPoem
     const [poems, setPoems] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false); // Local modal state (can be removed)
@@ -121,9 +122,45 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
         })}`;
     };
 
-    if (loading) {
-        return <div>Loading poems...</div>;
+    const renderLoadingSkeletons = () => {
+        return Array(6).fill().map((_, index) => (
+            <div key={`skeleton-${index}`} className="poem-card skeleton-card">
+                <div className="skeleton-light-tube"></div>
+                <div className="skeleton-title"></div>
+                <div className="skeleton-content"></div>
+                <div className="skeleton-content short"></div>
+                <div className="skeleton-footer">
+                    <div className="skeleton-timestamp"></div>
+                    <div className="skeleton-actions"></div>
+                </div>
+            </div>
+        ));
+    };
+
+    const renderWelcomeContainer = () => {
+        return (
+            <div className="welcome-container">
+                <h2 className="welcome-title">Welcome to the Poet's Calendar Vault</h2>
+                <div className="welcome-divider"></div>
+                <p className="welcome-text">
+                    Your personal space for poetic expression. Capture your thoughts, emotions, and creative inspirations.
+                </p>
+                <div className="welcome-instructions">
+                    <h3>Getting Started:</h3>
+                    <ul>
+                        <li>Click the <span className="highlight">Add New Poem</span> button to create your first poem</li>
+                        <li>Each poem has a unique color and style</li>
+                        <li>Organize your thoughts with our intuitive editor</li>
+                        <li>Your poems are securely saved to your account</li>
+                    </ul>
+                </div>
+                <button onClick={openModal} className="welcome-button">
+                    <i className="fas fa-feather-alt"></i> Create Your First Poem
+                </button>
+            </div>
+        );
     }
+    
 
     return (
         <div>
@@ -134,82 +171,85 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
             <div className="blankblock"></div>
 
             <div className="poem-grid" ref={poemListRef} onScroll={handleScroll}>
-                {poems.slice(0, poemsVisible).map((poem) => (
-                    <div
-                        key={poem.id}
-                        className="poem-card"
-                        style={{
-                            '--card-accent': poem?.color || '#ff9e3d',
-                            backgroundColor: poem?.color ? `${poem.color}33` : '#191919aa',
-                            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-                            url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E
-                            %3Ccircle cx="50" cy="50" r="50" fill="%23${poem.color?.slice(1)}" /%3E%3C/svg%3E')`,
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => viewPoem(poem)}
-                    >
-                        <div className="light-tube"></div>
-                        <div className="color-bar" style={{ backgroundColor: poem.color || '#ffffff' }}></div>
-                        <h3 className="poem-title">{poem.title}</h3>
-
+                {loading ? (
+                    renderLoadingSkeletons()
+                ) : poems.length === 0 ? (
+                    renderWelcomeContainer()
+                ) : (
+                    poems.slice(0, poemsVisible).map((poem) => (
                         <div
-                            className="poem-content"
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(poem.content) }}
-                        />
+                            key={poem.id}
+                            className="poem-card"
+                            style={{
+                                '--card-accent': poem?.color || '#ff9e3d',
+                                backgroundColor: poem?.color ? `${poem.color}33` : '#191919aa',
+                                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+                                url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E
+                                %3Ccircle cx="50" cy="50" r="50" fill="%23${poem.color?.slice(1)}" /%3E%3C/svg%3E')`,
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => viewPoem(poem)}
+                        >
+                            <div className="light-tube"></div>
+                            <div className="color-bar" style={{ backgroundColor: poem.color || '#ffffff' }}></div>
+                            <h3 className="poem-title">{poem.title}</h3>
 
-                        <div className="card-footer">
-                            <div className="footer-info">
-                                {poem.imported && (
-                                    <span className="imported-indicator" title="Imported from backup">
-                                        <FontAwesomeIcon icon={faFileImport} />
-                                    </span>
-                                )}
-                                <span className="timestamp">{formatDate(poem.timestamp)}</span>
-                            </div>
-                            <div className="actions-container">
-                                <button
-                                    className="icon-button"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        viewPoem(poem);
-                                    }}
-                                >
-                                    <i className="fas fa-eye"></i>
-                                </button>
+                            <div
+                                className="poem-content"
+                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(poem.content) }}
+                            />
 
-                                <button
-                                    className="icon-button"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        editPoem(poem);
-                                    }}
-                                >
-                                    <i className="fas fa-edit"></i>
-                                </button>
+                            <div className="card-footer">
+                                <div className="footer-info">
+                                    {poem.imported && (
+                                        <span className="imported-indicator" title="Imported from backup">
+                                            <FontAwesomeIcon icon={faFileImport} />
+                                        </span>
+                                    )}
+                                    <span className="timestamp">{formatDate(poem.timestamp)}</span>
+                                </div>
+                                <div className="actions-container">
+                                    <button
+                                        className="icon-button"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            viewPoem(poem);
+                                        }}
+                                    >
+                                        <i className="fas fa-eye"></i>
+                                    </button>
 
-                                <button
-                                    className="icon-button"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        confirmDelete(poem.id);
-                                    }}
-                                >
-                                    <i className="fas fa-trash"></i>
-                                </button>
+                                    <button
+                                        className="icon-button"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            editPoem(poem);
+                                        }}
+                                    >
+                                        <i className="fas fa-edit"></i>
+                                    </button>
+
+                                    <button
+                                        className="icon-button"
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            confirmDelete(poem.id);
+                                        }}
+                                    >
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                )}
                 {poems && poems.length > poemsVisible && !loadingMore.current && (
                     <div className="load-more-indicator">Loading more poems...</div>
                 )}
                 {loadingMore.current && <div className="load-more-indicator">Fetching poems...</div>}
-                {poems && poems.length === 0 && !loading && (
-                    <div className="empty-poems">No poems created yet.</div>
-                )}
             </div>
 
             {/* PoemModal is now in Profile */}

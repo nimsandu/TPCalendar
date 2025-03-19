@@ -18,6 +18,7 @@
     z-index: 1000;
     box-shadow: 0 0 20px rgba(255, 236, 127, 0.576);
     border: #fffca7e0 1px solid;
+    z-index: 999;
 }
 
 .greeting-message {

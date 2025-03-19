@@ -75,5 +75,17 @@
         "Completed restructuring of databases and security (including backup functionality).",
         "Updated SignUp component."
       ]
+    },
+    {
+      "version": "0.1.7",
+      "releaseDate": "2025-03-18",
+      "notes": [
+        "Bug fixes for content editable and calendar toggle.",
+        "Fixed card click issue.",
+        "More bug fixes.",
+        "Bug fix related to Vercel deployment.",
+        "Completed restructuring of databases and security (including backup functionality).",
+        "Updated SignUp component."
+      ]
     }
   ]

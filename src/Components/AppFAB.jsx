@@ -1,9 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useLocation } from 'react-router-dom';
 import './AppFAB.css';
 import './AppMenu.css';
 import './Modal.css';
+import { db } from '../auth/firebaseConfig';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+
+// Import icons
+import { 
+  FiMenu, 
+  FiX, 
+  FiRefreshCw, 
+  FiInfo, 
+  FiLock, 
+  FiMessageSquare, 
+  FiBell,
+  FiCheckCircle,
+  FiDownload,
+  FiLoader,
+  FiAlertCircle
+} from 'react-icons/fi';
 
 const CURRENT_VERSION = import.meta.env.VITE_APP_VERSION || '0.0.1';
 
@@ -19,6 +36,8 @@ const versionCompare = (a, b) => {
   }
   return 0;
 };
+
+const LAST_OPENED_NOTICES_KEY = 'lastOpenedNotices';
 
 const AppFAB = () => {
   // ROUTE DETECTION
@@ -40,20 +59,12 @@ const AppFAB = () => {
     feedback: false,
     notices: false
   });
-  const [notices] = useState([
-    {
-      id: 1,
-      title: 'Welcome to the App!',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    },
-    {
-      id: 2,
-      title: 'New Features Released',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    },
-  ]);
+  const [notices, setNotices] = useState([]);
+  const [hasNewNotices, setHasNewNotices] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ type: '', message: '' });
 
-  // MODIFIED SERVICE WORKER SETUP
+  // SERVICE WORKER SETUP
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
@@ -62,7 +73,6 @@ const AppFAB = () => {
     immediate: true,
     onRegisteredSW(swUrl, r) {
       if (!r) return;
-      // Check for updates hourly, but don't apply them automatically
       setInterval(() => {
         console.log("Checking for updates...");
         setUpdateInfo(prev => ({ ...prev, checking: true }));
@@ -70,29 +80,22 @@ const AppFAB = () => {
       }, 60 * 60 * 1000);
     },
     onNeedRefresh: () => {
-      // Just flag that an update is available, but don't refresh automatically
       console.log("Update available!");
       checkVersionUpdates();
-      // Don't call updateServiceWorker() here - let the user decide
     },
   });
 
   // VERSION CHECK
-  const checkVersionUpdates = async () => {
+  const checkVersionUpdates = useCallback(async () => {
     try {
       setUpdateInfo(prev => ({ ...prev, checking: true }));
-
       const response = await fetch('/versionNotes.json');
       if (!response.ok) throw new Error('Failed to fetch version notes');
-
       const notesData = await response.json();
       const storedVersion = localStorage.getItem('appVersion') || '0.0.0';
-
       const newVersions = notesData.filter(note =>
         versionCompare(note.version, storedVersion) > 0
       );
-
-      // Set update info but don't auto-update
       setUpdateInfo({
         available: newVersions.length > 0 || needRefresh,
         notes: newVersions.sort((a, b) => versionCompare(b.version, a.version)),
@@ -101,14 +104,22 @@ const AppFAB = () => {
     } catch (error) {
       console.error('Version check failed:', error);
       setUpdateInfo(prev => ({ ...prev, checking: false }));
+      showToastNotification('error', 'Failed to check for updates.');
     }
+  }, [needRefresh]);
+
+  // Show toast notification
+  const showToastNotification = (type, message) => {
+    setToastMessage({ type, message });
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
   };
 
-  // Check for updates manually (can be triggered by user)
+  // Check for updates manually
   const checkForUpdates = () => {
-    // If already checking, don't start another check
     if (updateInfo.checking) return;
-
     if (registration) {
       setUpdateInfo(prev => ({ ...prev, checking: true }));
       registration.update().then(() => {
@@ -119,102 +130,110 @@ const AppFAB = () => {
     }
   };
 
-  // IMPROVED UPDATE HANDLER
+  // Update handler
   const handleUserUpdate = async () => {
-    // If no updates are available, just close the modal
     if (!updateInfo.available) {
       toggleModal('update', false);
       return;
     }
-
     try {
-      // Show updating state
       setIsUpdating(true);
-
-      // Update the stored version before reload
       const latestVersion = updateInfo.notes.length > 0
         ? updateInfo.notes[0].version
         : CURRENT_VERSION;
-
       localStorage.setItem('appVersion', latestVersion);
-
-      // Set a flag that we're in the middle of an update
       sessionStorage.setItem('app_updating', 'true');
-
-      // Different handling based on service worker state
       if (registration?.waiting) {
-        // Create a promise that resolves when the controller changes
         const controllerChangePromise = new Promise(resolve => {
           navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
         });
-
-        // Tell the waiting service worker to activate
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-
-        // Wait for the controller change (with a timeout)
         const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Update timeout')), 5000)
         );
-
         await Promise.race([controllerChangePromise, timeoutPromise]);
-
-        // Reload the page
         window.location.reload();
       } else {
-        // Use the update function from the hook
-        await updateServiceWorker(true); // true = skip waiting
-
-        // Reload after a short delay to ensure the new SW is active
+        await updateServiceWorker(true);
         setTimeout(() => {
           window.location.reload();
         }, 500);
       }
     } catch (error) {
       console.error('Update failed:', error);
-      // Reset updating state
       setIsUpdating(false);
       sessionStorage.removeItem('app_updating');
-
-      alert('The update failed. Please try again or reload the app manually.');
+      showToastNotification('error', 'Update failed. Please try again.');
       toggleModal('update', false);
     }
   };
 
   // MODAL TOGGLE
   const toggleModal = (modalName, state) => {
-    // If opening the update modal, check for updates first
     if (modalName === 'update' && state === true) {
       checkForUpdates();
     }
-
     setModals(prev => ({ ...prev, [modalName]: state }));
     setShowAppMenu(false);
+
+    // Update last opened timestamp when notices modal is opened
+    if (modalName === 'notices' && state === true) {
+      localStorage.setItem(LAST_OPENED_NOTICES_KEY, new Date().toISOString());
+      setHasNewNotices(false); // Clear the new notice indicator
+    }
   };
 
-  // VERSION EFFECT - On component mount
+  // Toggle menu with animation
+  const toggleAppMenu = () => {
+    setShowAppMenu(!showAppMenu);
+  };
+
+  // FETCH NOTICES FROM FIREBASE
   useEffect(() => {
-    // Check if we're returning from an update
+    const noticesCollectionRef = collection(db, 'notices');
+    const q = query(noticesCollectionRef, orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedNotices = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotices(fetchedNotices);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // CHECK FOR NEW NOTICES
+  useEffect(() => {
+    const lastOpened = localStorage.getItem(LAST_OPENED_NOTICES_KEY);
+    if (lastOpened) {
+      const lastOpenedDate = new Date(lastOpened);
+      const newOnes = notices.some(notice => notice.createdAt && new Date(notice.createdAt.seconds * 1000) > lastOpenedDate);
+      setHasNewNotices(newOnes);
+    } else if (notices.length > 0) {
+      // If never opened, consider all as new initially
+      setHasNewNotices(true);
+    }
+  }, [notices]);
+
+  // VERSION EFFECT
+  useEffect(() => {
     const wasUpdating = sessionStorage.getItem('app_updating') === 'true';
     if (wasUpdating) {
-      // Clear the flag
       sessionStorage.removeItem('app_updating');
-      // Show a success message
       setTimeout(() => {
-        alert('App successfully updated to the latest version!');
+        showToastNotification('success', 'App successfully updated!');
       }, 500);
     }
-
-    // Set the current version in local storage if not set or if newer
     const storedVersion = localStorage.getItem('appVersion');
     if (!storedVersion || versionCompare(CURRENT_VERSION, storedVersion) > 0) {
       localStorage.setItem('appVersion', CURRENT_VERSION);
     }
-
-    // Initial version check on mount
     checkVersionUpdates();
-  }, []);
+  }, [checkVersionUpdates]);
 
-  // Watch for needRefresh changes and update our updateInfo state
+  // Watch for needRefresh changes
   useEffect(() => {
     if (needRefresh) {
       setUpdateInfo(prev => ({
@@ -224,108 +243,179 @@ const AppFAB = () => {
     }
   }, [needRefresh]);
 
-  // Check for updates when the app becomes visible again
+  // Check for updates on visibility change
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         checkVersionUpdates();
       }
     };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [checkVersionUpdates]);
+  
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!showAppMenu) return;
+    
+    const handleClickOutside = (event) => {
+      const fabContainer = document.querySelector('.app-fab-container');
+      if (fabContainer && !fabContainer.contains(event.target)) {
+        setShowAppMenu(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAppMenu]);
 
   return (
     <>
-      {/* Update overlay - shown during updates */}
+      {/* Update overlay */}
       {isUpdating && (
         <div className="update-overlay">
-          <div className="update-modal">
-            <div className="spinner"></div>
+          <div className="update-modal glass-card">
+            <div className="update-icon-container updating">
+              <div className="update-icon pulse">
+                <FiRefreshCw className="spinning-icon" />
+              </div>
+            </div>
             <h3>Updating App</h3>
             <p>Please wait while we install the latest version...</p>
           </div>
         </div>
       )}
 
-      <div className={`app-fab-container ${isRoot ? 'root-position' : 'other-position'}`}>
-        <button
-          className="app-fab"
-          onClick={() => setShowAppMenu(!showAppMenu)}
-          aria-label="Open app menu"
-        >
-          {updateInfo.available && <div className="red-dot" />} 🔔
-        </button>
-
-        {showAppMenu && (
-          <div className="app-menu">
-            <button
-              className={`app-menu-item ${updateInfo.available ? 'with-dot' : ''}`}
-              onClick={() => toggleModal('update', true)}
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="update-toast-container">
+          <div className={`update-toast glass-card ${toastMessage.type}`}>
+            <div className="update-toast-icon">
+              {toastMessage.type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
+            </div>
+            <div className="update-toast-message">{toastMessage.message}</div>
+            <button 
+              className="update-toast-close" 
+              onClick={() => setShowToast(false)}
             >
-              Check for Updates
-              {updateInfo.available && <div className="red-dot-small" />}
-            </button>
-            <button className="app-menu-item" onClick={() => toggleModal('privacy', true)}>
-              Privacy Policy
-            </button>
-            <button className="app-menu-item" onClick={() => toggleModal('about', true)}>
-              About App
-            </button>
-            <button className="app-menu-item" onClick={() => toggleModal('feedback', true)}>
-              Send Feedback
-            </button>
-            <button
-              className="app-menu-item with-dot"
-              onClick={() => toggleModal('notices', true)}
-            >
-              Notices
-              {notices.length > 0 && <div className="yellow-dot-small" />}
+              <FiX />
             </button>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Update Modal */}
+      <div className={`app-fab-container ${isRoot ? 'root-position' : 'other-position'}`}>
+        {/* Glass backdrop moved outside of button */}
+        <div className={`glass-backdrop ${showAppMenu ? 'active' : ''}`}></div>
+        
+        <button
+          className={`app-fab ${showAppMenu ? 'active' : ''}`}
+          onClick={toggleAppMenu}
+          aria-label="Open app menu"
+        >
+          {updateInfo.available ? <div className="notification-dot red-dot" /> : null}
+          {hasNewNotices ? <div className="notification-dot yellow-dot" /> : null}
+          {showAppMenu ? <FiX className="fab-icon" /> : <FiMenu className="fab-icon" />}
+        </button>
+        
+        {/* Menu moved outside of button */}
+        <div className={`app-menu ${showAppMenu ? 'visible' : ''}`}>
+          <button
+            className={`app-menu-item ${updateInfo.available ? 'with-notification' : ''}`}
+            onClick={() => toggleModal('update', true)}
+          >
+            <FiRefreshCw className="menu-icon" />
+            <span className="menu-text">Updates</span>
+            {updateInfo.available && <div className="red-dot-small" />}
+          </button>
+          <button 
+            className="app-menu-item" 
+            onClick={() => toggleModal('privacy', true)}
+          >
+            <FiLock className="menu-icon" />
+            <span className="menu-text">Privacy</span>
+          </button>
+          <button 
+            className="app-menu-item" 
+            onClick={() => toggleModal('about', true)}
+          >
+            <FiInfo className="menu-icon" />
+            <span className="menu-text">About</span>
+          </button>
+          <button 
+            className="app-menu-item" 
+            onClick={() => toggleModal('feedback', true)}
+          >
+            <FiMessageSquare className="menu-icon" />
+            <span className="menu-text">Feedback</span>
+          </button>
+          <button
+            className={`app-menu-item ${hasNewNotices ? 'with-notification' : ''}`}
+            onClick={() => toggleModal('notices', true)}
+          >
+            <FiBell className="menu-icon" />
+            <span className="menu-text">Notices</span>
+            {hasNewNotices && <div className="yellow-dot-small" />}
+          </button>
+        </div>
+
+        {/* Updated Modals with Glass Card Style */}
         {modals.update && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+          <div className="modal-fo-overlay">
+            <div className="modal-fo-content glass-card">
               <h3>Updates</h3>
-
+              
               {updateInfo.checking ? (
-                <div className="checking-updates">
-                  <div className="spinner-small"></div>
-                  <p>Checking for updates...</p>
+                <div>
+                <div className="checking-updates glass-section">
+                  <div className="update-icon-container checking">
+                    <div className="update-icon pulse">
+                      <FiRefreshCw className="spinning-icon" />
+                    </div>
+                  </div>
                 </div>
+                 <div className="update-icon-container checking">
+                 <p>Checking for updates...</p>
+                 </div>
+                 </div>
               ) : updateInfo.available ? (
                 <>
-                  <h4>New Updates Available!</h4>
-                  {updateInfo.notes.length > 0 ? (
-                    updateInfo.notes.map((note) => (
-                      <div key={note.version} className="version-note">
-                        <h4>Version {note.version} ({note.releaseDate})</h4>
-                        <ul>
-                          {note.notes.map((item, index) => (
-                            <li key={index}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))
-                  ) : (
-                    <p>A new version of the app is available.</p>
-                  )}
+                  <div className="update-icon-container">
+                    <div className="update-icon">
+                      <FiDownload />
+                    </div>
+                  </div>
+                  <h4 className="text-center">New Updates Available!</h4>
+                  <div className="update-notes-container">
+                    {updateInfo.notes.length > 0 ? (
+                      updateInfo.notes.map((note) => (
+                        <div key={note.version} className="version-note glass-section">
+                          <h4>Version {note.version} <span className="version-date">({note.releaseDate})</span></h4>
+                          <ul>
+                            {note.notes.map((item, index) => (
+                              <li key={index}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center glass-section">A new version of the app is available.</p>
+                    )}
+                  </div>
                   <div className="modal-buttons">
                     <button
-                      className="primary-button"
+                      className="primary-button glass-button"
                       onClick={handleUserUpdate}
                       disabled={isUpdating}
                     >
-                      Install Update Now
+                      <FiDownload className="button-icon" /> Install Update
                     </button>
                     <button
-                      className="secondary-button"
+                      className="secondary-button glass-button"
                       onClick={() => toggleModal('update', false)}
                       disabled={isUpdating}
                     >
@@ -335,20 +425,24 @@ const AppFAB = () => {
                 </>
               ) : (
                 <>
-                  <div className="up-to-date">
-                    <span className="checkmark">✓</span>
-                    <p>Your app is up to date!</p>
+                  <div className="update-icon-container up-to-date">
+                    <div className="update-icon">
+                      <FiCheckCircle />
+                    </div>
                   </div>
-                  <p><strong>Current Version:</strong> {CURRENT_VERSION}</p>
+                  <div className="up-to-date glass-section">
+                    <p><span className="checkmark-text">✓</span> Your app is up to date!</p>
+                  </div>
+                  <p className="text-center"><strong>Current Version:</strong> {CURRENT_VERSION}</p>
                   <div className="modal-buttons">
                     <button
-                      className="secondary-button"
+                      className="secondary-button glass-button"
                       onClick={checkForUpdates}
                     >
-                      Check Again
+                      <FiRefreshCw className="button-icon" /> Check Again
                     </button>
                     <button
-                      className="secondary-button"
+                      className="secondary-button glass-button"
                       onClick={() => toggleModal('update', false)}
                     >
                       Close
@@ -356,14 +450,13 @@ const AppFAB = () => {
                   </div>
                 </>
               )}
-
               <button
                 className="modal-close-button"
                 onClick={() => toggleModal('update', false)}
                 aria-label="Close update modal"
                 disabled={isUpdating}
               >
-                &times;
+                <FiX />
               </button>
             </div>
           </div>
@@ -371,17 +464,27 @@ const AppFAB = () => {
 
         {/* About Modal */}
         {modals.about && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+          <div className="modal-fo-overlay">
+            <div className="modal-fo-content glass-card">
               <h3>About App</h3>
-              <p>Your application description here.</p>
-              <p><strong>Current Version:</strong> {CURRENT_VERSION}</p>
+              <div className="glass-section">
+                <p>Your application description here.</p>
+                <p><strong>Current Version:</strong> {CURRENT_VERSION}</p>
+              </div>
+              <div className="modal-buttons">
+                <button
+                  className="secondary-button glass-button"
+                  onClick={() => toggleModal('about', false)}
+                >
+                  Close
+                </button>
+              </div>
               <button
                 className="modal-close-button"
                 onClick={() => toggleModal('about', false)}
                 aria-label="Close about modal"
               >
-                &times;
+                <FiX />
               </button>
             </div>
           </div>
@@ -389,16 +492,26 @@ const AppFAB = () => {
 
         {/* Privacy Modal */}
         {modals.privacy && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+          <div className="modal-fo-overlay">
+            <div className="modal-fo-content glass-card">
               <h3>Privacy Policy</h3>
-              <p>Your privacy policy content here.</p>
+              <div className="glass-section">
+                <p>Your privacy policy content here.</p>
+              </div>
+              <div className="modal-buttons">
+                <button
+                  className="secondary-button glass-button"
+                  onClick={() => toggleModal('privacy', false)}
+                >
+                  Close
+                </button>
+              </div>
               <button
                 className="modal-close-button"
                 onClick={() => toggleModal('privacy', false)}
                 aria-label="Close privacy modal"
               >
-                &times;
+                <FiX />
               </button>
             </div>
           </div>
@@ -406,16 +519,26 @@ const AppFAB = () => {
 
         {/* Feedback Modal */}
         {modals.feedback && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+          <div className="modal-fo-overlay">
+            <div className="modal-fo-content glass-card">
               <h3>Send Feedback</h3>
-              <p>Contact us at: <a href="mailto:feedback@example.com">feedback@example.com</a></p>
+              <div className="glass-section">
+                <p>Contact us at: <a href="mailto:feedback@example.com" className="glass-link">feedback@example.com</a></p>
+              </div>
+              <div className="modal-buttons">
+                <button
+                  className="secondary-button glass-button"
+                  onClick={() => toggleModal('feedback', false)}
+                >
+                  Close
+                </button>
+              </div>
               <button
                 className="modal-close-button"
                 onClick={() => toggleModal('feedback', false)}
                 aria-label="Close feedback modal"
               >
-                &times;
+                <FiX />
               </button>
             </div>
           </div>
@@ -423,25 +546,44 @@ const AppFAB = () => {
 
         {/* Notices Modal */}
         {modals.notices && (
-          <div className="modal-overlay">
-            <div className="modal-content">
+          <div className="modal-fo-overlay">
+            <div className="modal-fo-content glass-card">
               <h3>Notices</h3>
-              {notices.length > 0 ? (
-                notices.map((notice) => (
-                  <div key={notice.id} className="notice-item">
-                    <h4>{notice.title}</h4>
-                    <p>{notice.content}</p>
+              <div className="notices-container">
+                {notices.length > 0 ? (
+                  notices.map((notice) => (
+                    <div key={notice.id} className="notice-item glass-section">
+                      <h4>{notice.title}</h4>
+                      <div className="notice-content">
+                        {notice.content}
+                      </div>
+                      {notice.createdAt && (
+                        <p className="notice-date">
+                          {new Date(notice.createdAt.seconds * 1000).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="glass-section text-center">
+                    <p>No current notices.</p>
                   </div>
-                ))
-              ) : (
-                <p>No current notices.</p>
-              )}
+                )}
+              </div>
+              <div className="modal-buttons">
+                <button
+                  className="secondary-button glass-button"
+                  onClick={() => toggleModal('notices', false)}
+                >
+                  Close
+                </button>
+              </div>
               <button
                 className="modal-close-button"
                 onClick={() => toggleModal('notices', false)}
                 aria-label="Close notices modal"
               >
-                &times;
+                <FiX />
               </button>
             </div>
           </div>

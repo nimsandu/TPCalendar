@@ -50,7 +50,7 @@ const Profile = () => {
     };
 
     const handleOpenPoemModal = () => {
-        setPoemToEditFromProfile(null); // Reset for adding new
+        setPoemToEditFromProfile(null);
         setIsPoemModalOpen(true);
     };
 
@@ -74,6 +74,7 @@ const Profile = () => {
 
     return (
         <div className="profile-container">
+
             <nav className="glass-nav">
                 <div className="nav-content">
                     <button className="profile-pic-btn" onClick={toggleProfileMenu}>
@@ -103,19 +104,11 @@ const Profile = () => {
                         </div>
 
                         <div className="menu-actions">
-                            <Link to="/change-password" className="menu-item">
-                                Change Password
-                            </Link>
-                            <Link to="/edit-profile" className="menu-item">
-                                Edit Profile
-                            </Link>
-                            <button className="backup-btn" onClick={goToBackupPage}>
-                                Backup & Restore
-                            </button>
+                            <Link to="/change-password" className="menu-item">Change Password</Link>
+                            <Link to="/edit-profile" className="menu-item">Edit Profile</Link>
+                            <button className="backup-btn" onClick={goToBackupPage}>Backup & Restore</button>
                             <SignOut className="menu-item" />
-                            <button className="close-menu" onClick={toggleProfileMenu}>
-                                Close
-                            </button>
+                            <button className="close-menu" onClick={toggleProfileMenu}>Close</button>
                         </div>
                     </div>
                 </div>
@@ -129,12 +122,7 @@ const Profile = () => {
 
             <Poems user={user} onOpenModal={handleOpenPoemModal} onEditPoem={handleEditPoemFromChild} />
 
-            <PoemModal
-                isOpen={isPoemModalOpen}
-                onClose={handleClosePoemModal}
-                poemToEdit={poemToEditFromProfile}
-                user={user}
-            />
+            <PoemModal isOpen={isPoemModalOpen} onClose={handleClosePoemModal} poemToEdit={poemToEditFromProfile} user={user} />
         </div>
     );
 };
