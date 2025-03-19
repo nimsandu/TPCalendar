@@ -32,10 +32,21 @@ import octImg from "./images/oct_mob.jpeg";
 import novImg from "./images/nov_mob.jpeg";
 import decImg from "./images/dec_mob.jpeg";
 
+// Import a default background image
+import defaultBg from "./images/bg3.jpg";
+
 const App = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-    const [background, setBackground] = useState("");
+    const [background, setBackground] = useState(defaultBg); // Set default background
     const [isLandscape, setIsLandscape] = useState(window.innerWidth > 850);
+    const [loadingBackground, setLoadingBackground] = useState(true);
+
+    // Function to handle image loading errors
+    const handleImageLoadError = () => {
+        console.error("Failed to load month background image, using default.");
+        setBackground(defaultBg);
+        setLoadingBackground(false);
+    };
 
     // Handle screen resizing for landscape blur
     useEffect(() => {
@@ -48,21 +59,37 @@ const App = () => {
 
     // Update background based on selectedMonth
     useEffect(() => {
+        setLoadingBackground(true);
         const backgrounds = {
-            0: `url(${janImg})`,
-            1: `url(${febImg})`,
-            2: `url(${marImg})`,
-            3: `url(${aprImg})`,
-            4: `url(${mayImg})`,
-            5: `url(${junImg})`,
-            6: `url(${julImg})`,
-            7: `url(${augImg})`,
-            8: `url(${sepImg})`,
-            9: `url(${octImg})`,
-            10: `url(${novImg})`,
-            11: `url(${decImg})`,
+            0: janImg,
+            1: febImg,
+            2: marImg,
+            3: aprImg,
+            4: mayImg,
+            5: junImg,
+            6: julImg,
+            7: augImg,
+            8: sepImg,
+            9: octImg,
+            10: novImg,
+            11: decImg,
         };
-        setBackground(backgrounds[selectedMonth]);
+        const selectedBg = backgrounds[selectedMonth];
+
+        // Preload the image to handle loading and errors
+        const img = new Image();
+        img.onload = () => {
+            setBackground(`url(${selectedBg})`);
+            setLoadingBackground(false);
+        };
+        img.onerror = handleImageLoadError;
+        img.src = selectedBg;
+
+        // If there's no image for the month, use the default immediately
+        if (!selectedBg) {
+            setBackground(defaultBg);
+            setLoadingBackground(false);
+        }
     }, [selectedMonth]);
 
     return (

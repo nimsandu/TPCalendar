@@ -9,6 +9,7 @@ import avatar4 from "../images/avatar4.png";
 import avatar5 from "../images/avatar5.png";
 import Loader from "./Loader";
 import "./EditProfile.css";
+import backgroundImage from "../images/bg3.jpg"; // Import the background image
 
 const avatars = [avatar1, avatar2, avatar3, avatar4, avatar5];
 
@@ -21,9 +22,18 @@ const EditProfile = () => {
     // Apply background image when component mounts
     useEffect(() => {
         document.body.className = "editprofile-page";
+        document.body.style.backgroundImage = `url(${backgroundImage})`; // Set the background image
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.backgroundAttachment = "fixed";
+
         // Cleanup function to reset when component unmounts
         return () => {
             document.body.className = "";
+            document.body.style.backgroundImage = null; // Reset background image
+            document.body.style.backgroundSize = null;
+            document.body.style.backgroundRepeat = null;
+            document.body.style.backgroundAttachment = null;
         };
     }, []);
 
@@ -78,7 +88,7 @@ const EditProfile = () => {
         <div className="auth-container">
             {loading && <Loader />}
             <button className="responsive-back-button" onClick={() => navigate(-1)}>
-            <svg width="195px" height="195px" viewBox="0 0 1024.00 1024.00" fill="#ffffff" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" stroke-width="79.872"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z" fill=""></path></g></svg>
+                <svg width="195px" height="195px" viewBox="0 0 1024.00 1024.00" fill="#ffffff" className="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" strokeWidth="79.872"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z" fill=""></path></g></svg>
             </button>
             <h2>Edit Profile</h2>
             <form onSubmit={handleSubmit}>
