@@ -1,0 +1,772 @@
+/* SharePoem.css */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
+.share-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.share-modal {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    max-width: 95vw;
+    width: 100%;
+    max-height: 95vh;
+    margin: auto;
+}
+
+.share-modal-container {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 95vh;
+    overflow: hidden;
+}
+
+.share-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    background-color: #1a1a1a;
+    z-index: 10;
+}
+
+.share-modal-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.share-close-button {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.close-button:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.share-modal-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    .share-modal-content {
+        flex-direction: row;
+    }
+}
+
+/* Fixed-size preview panel */
+.preview-section {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .preview-section {
+        width: 320px;
+        margin: 0;
+        position: sticky;
+    }
+}
+
+.preview-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    /* Default aspect ratio - will be overridden by inline styles */
+    padding-bottom: 177.78%; /* 9:16 aspect ratio */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.preview-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+/* Controls area */
+.controls-area {
+    flex: 1;
+    overflow-y: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.control-section {
+    background-color: #222;
+    border-radius: 8px;
+    overflow: visible;
+    margin-bottom: 15px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #2a2a2a;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.section-header:hover {
+    background-color: #333;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 500;
+}
+
+.section-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: visible;
+    position: relative;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: visible;
+}
+
+.control-group label {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow: visible;
+}
+
+.button-group button {
+    flex: 1;
+    min-width: 60px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #333;
+    border: 1px solid #444;
+    color: #ccc;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.button-group button:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+.button-group button.active {
+    background-color: #ff9e3d;
+    color: #000;
+    border-color: #ff9e3d;
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    background-color: #333;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.control-button:hover {
+    background-color: #444;
+}
+
+.control-button.active {
+    background-color: #ff9e3d;
+    color: #000;
+}
+
+.control-button.color-button {
+    justify-content: space-between;
+}
+
+.color-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.share-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #333;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background-color: #1a1a1a;
+    z-index: 10;
+}
+
+.export-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    background-color: #ff9e3d;
+    border: none;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.export-button:hover {
+    background-color: #ffb05e;
+}
+
+.export-button:disabled {
+    background-color: #666;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+/* Poem display */
+.share-poem-display {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    border-radius: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.share-poem-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.share-poem-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.share-poem-display-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.share-poem-title {
+    margin: 0 0 20px 0;
+    word-wrap: break-word;
+    text-align: inherit;
+    font-weight: 700;
+}
+
+.share-poem-content {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+    text-align: inherit;
+    overflow-wrap: break-word;
+}
+
+.share-poem-content p {
+    margin: 0 0 8px 0;
+    line-height: 1.6;
+}
+
+.share-poem-content p:last-child {
+    margin-bottom: 0;
+}
+
+.share-poem-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.poet-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: -40px;
+    margin-left: -10px;
+}
+
+.poet-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.poet-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.poet-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.share-poem-date {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.poet-tagline {
+    margin-top: 4px;
+    font-size: 1.1rem;
+    opacity: 0.7;
+    align-self: flex-end;
+}
+
+/* Font options */
+.font-standard {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.font-handwriting {
+    font-family: 'Caveat', 'Dancing Script', cursive;
+}
+
+/* Text alignment */
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Title sizes */
+.title-sm .share-poem-title {
+    font-size: 1.8rem;
+}
+
+.title-md .share-poem-title {
+    font-size: 2.5rem;
+}
+
+.title-lg .share-poem-title {
+    font-size: 3rem;
+}
+
+.title-xl .share-poem-title {
+    font-size: 4rem;
+}
+
+/* Content sizes */
+.content-sm .share-poem-content {
+    font-size: 1rem;
+}
+
+.content-md .share-poem-content {
+    font-size: 1.5rem;
+}
+
+.content-lg .share-poem-content {
+    font-size: 2rem;
+}
+
+.content-xl .share-poem-content {
+    font-size: 2.5rem;
+}
+
+/* Edit mode */
+.share-poem-title-edit, .share-poem-content-edit {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    color: inherit;
+    font-family: inherit;
+    outline: none;
+}
+
+.share-poem-title-edit {
+    font-size: inherit;
+    font-weight: 700;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.share-poem-content-edit {
+    flex: 1;
+    width: 100%;
+    resize: none;
+    margin-bottom: 20px;
+    font-size: inherit;
+    line-height: 1.6;
+}
+
+/* Color picker */
+.color-picker-popover {
+    position: absolute;
+    z-index: 100;
+}
+
+.color-picker-cover {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+/* Loading animation */
+.loading-indicator {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: #000;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Additional for blur slider */
+.blur-slider {
+    width: 100%;
+    accent-color: #ff9e3d;
+    height: 5px;
+    border-radius: 5px;
+    background: #333;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.blur-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff9e3d;
+    cursor: pointer;
+}
+
+.blur-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ff9e3d;
+    cursor: pointer;
+    border: none;
+}
+
+.clear-button {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+}
+
+.clear-button:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 767px) {
+    .share-overlay {
+        padding: 0;
+        align-items: flex-start;
+    }
+    
+    .share-modal {
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        margin: 0;
+    }
+    
+    .share-modal-container {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .share-modal-content {
+        flex: 1;
+        padding: 15px;
+        gap: 15px;
+        overflow-y: auto;
+    }
+    
+    .controls-area {
+        width: 100%;
+    }
+    
+    .preview-section {
+        max-width: 280px;
+        margin: 0 auto 15px auto;
+    }
+    
+    .section-content {
+        padding: 12px;
+    }
+    
+    .control-group {
+        gap: 6px;
+    }
+    
+    .button-group {
+        flex-wrap: wrap;
+    }
+    
+    .button-group button {
+        flex: 1 0 calc(33.33% - 6px);
+        font-size: 0.8rem;
+        padding: 8px 6px;
+    }
+    
+    .share-poem-display-content {
+        padding: 16px;
+    }
+    
+    .title-xl .share-poem-title {
+        font-size: 2.4rem;
+    }
+    
+    .content-xl .share-poem-content {
+        font-size: 1.4rem;
+    }
+
+    /* Compact footer for mobile */
+    .share-modal-footer {
+        padding: 12px 15px;
+    }
+
+    .export-button {
+        padding: 8px 15px;
+    }
+
+    /* Make accordion sections easier to tap */
+    .section-header {
+        padding: 15px;
+    }
+
+    /* Improve scrolling behavior */
+    .share-modal-content {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Adjust font sizes for mobile */
+    .share-modal-header h2 {
+        font-size: 1.3rem;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 380px) {
+    .preview-section {
+        max-width: 240px;
+    }
+    
+    .button-group button {
+        flex: 1 0 calc(50% - 4px);
+        font-size: 0.75rem;
+        padding: 7px 5px;
+    }
+    
+    .share-modal-header h2 {
+        font-size: 1.1rem;
+    }
+    
+    .export-button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .control-button {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    .section-header h3 {
+        font-size: 0.9rem;
+    }
+
+    .control-group label {
+        font-size: 0.8rem;
+    }
+}
+
+/* Enhanced sticky header and footer for mobile */
+@media (max-height: 600px) and (max-width: 767px) {
+    .preview-section {
+        max-width: 180px;
+    }
+
+    .preview-container {
+        padding-bottom: 150%; /* Adjust aspect ratio for smaller height */
+    }
+
+    .share-poem-display-content {
+        padding: 12px;
+    }
+
+    .control-section {
+        margin-bottom: 10px;
+    }
+}
+
+/* No text shadow on titles */
+.no-text-shadow {
+    text-shadow: none;
+}
+
+/* Handling overflow */
+.share-poem-title, .share-poem-content {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Color picker positioning fix */
+.color-picker-container {
+    position: relative;
+}
+
+/* Enhanced scrolling experience */
+.share-modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #444 #222;
+}
+
+.share-modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.share-modal-content::-webkit-scrollbar-track {
+    background: #222;
+}
+
+.share-modal-content::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 4px;
+}
+
+/* Fix for dropdowns and color pickers */
+.dropdown-menu, .color-picker-popover {
+    z-index: 1050;
+    position: absolute;
+}
+
+/* Additional helper for dropdown positioning */
+.dropdown-container {
+    position: relative;
+}
+
+/* Add a max-height to menus to prevent overflow */
+.dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Safari fix for sticky positioning */
+@supports (-webkit-touch-callout: none) {
+    .share-modal-header, .share-modal-footer {
+        position: -webkit-sticky;
+    }
+}

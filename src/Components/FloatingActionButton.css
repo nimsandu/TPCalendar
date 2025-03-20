@@ -1,107 +1,177 @@
 .fab-container {
+  position: fixed;
+  bottom: 3%;
+  left: 3%;
+  width: auto;
+  height: 40px;
+  font-size: 30px;
+  background-color: rgba(54, 54, 54, 0.411);
+  backdrop-filter: blur(15px);
+  color: white;
+  border-radius: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.3s ease-in-out;
+}
+
+.fab-container:hover {
+  background-color: rgba(0, 0, 0, 0.205);
+  transform: scale(1.05);
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px 1px rgba(114, 114, 114, 0.5);
+  transition: all 0.5s ease-in-out;
+}
+
+.fab-logged-in {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  transition: all 0.4s ease-in-out;
+}
+
+.fab-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  margin-left: -20px;
+  border: 1px solid rgba(255, 255, 255, 0.483);
+  transition: all 0.4s ease-in-out;
+  box-shadow: 0px 0px 8px #ffffff83;
+}
+
+
+.fab-text {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.4s ease-in-out;
+  letter-spacing: 0.5px;
+}
+
+.fab-logged-out {
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  transition: all 0.4s ease-in-out;
+}
+
+.fab-calendar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transition: all 0.4s ease-in-out;
+}
+
+/* Seal-like date display */
+.fab-date-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255 248 192);
+  box-shadow: 0px 0px 10px #f4ff84;
+  backdrop-filter: blur(15px) !important;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgb(255, 252, 99);
+  position: absolute;
+  left: -12px;
+}
+
+
+
+.fab-day-name {
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: -1px;
+  color: #000;
+
+}
+
+.fab-day-number {
+  font-size: 25px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+  margin-top: 2px;
+}
+
+.fab-month {
+  font-size: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: -2px;
+  color: #000;
+}
+
+.fab-full-date {
+  font-size: 12px;
+  white-space: nowrap;
+  margin-left: 34px;
+  font-weight: 500;
+}
+
+/* Responsive styles */
+@media (max-width: 850px) {
+  .fab-container {
+    height: 55px;
+    width: 50px;
+    padding-left: 5px;
+    border-radius: 25px;
     position: fixed;
-    bottom: 20px;  /* Distance from bottom */
-    left: 20px;  /* Distance from right */
-    padding: 10px;
-    width: auto;  /* Button size */
-    height: 40px;
-    font-size: 30px;
-    background-color: #0000009a;  /* Nice purple shade */
-    backdrop-filter: blur(25px);
-    color: white;
-    border-radius: 20px;  /* Make it round */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);  /* Add shadow */
-    cursor: pointer;
-    z-index: 9999;
-    display: visible;
-    transition: all 0.4s ease-in-out;
+    bottom: 15px;
+    left: 18px;
   }
   
-  .fab-container:hover {
-    background-color: #00000019;
-    transform: scale(1.1);
-    border-radius: 10px;
-    transition: all 0.4s ease-in-out;
+  .fab-full-date {
+    display: none;
   }
   
-  .fab-logged-in {
-    display: flex;
-    align-items: center;
-    transition: all 0.4s ease-in-out;
+  .fab-logged-in .fab-text {
+    display: none;
   }
   
   .fab-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
-    margin-right: 5px;
-    margin-left: -10px;
-    transition: all 0.4s ease-in-out;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-left: 0px;
+    border: 1px solid rgba(255, 255, 255, 0.702);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 0px 8px #ffffffb0;
   }
 
-
+  .fab-avatar:hover{
+    border-radius: 20%;
+    transition: all 0.3s ease-in-out;
+  }
   
-  .fab-text {
-    font-size: 14px;
-    white-space: nowrap;
-    transition: all 0.4s ease-in-out;
+  .fab-logged-in {
+    padding: 0;
+  }
+  
+  .fab-date-display {
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-left: 0px;
+    width: 55px;
+    height: 55px;
+    left: 0px;
+    transition: all 0.3s ease-in-out;
   }
 
-  .fab-logged-out{
-    display: flex;
-    align-items: center;
-    transition: all 0.4s ease-in-out;
+  .fab-date-display:hover{
+    border-radius: 20%;
+    transition: all 0.3s ease-in-out;
+    transform: scale(1.05);
   }
-  
-  .fab-text {
-    font-size: 14px;
-    font-weight: bold;
-    transition: all 0.4s ease-in-out;
-  }
-  
-  .fab-calendar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    transition: all 0.4s ease-in-out;
-    width: 40px;
-  }
-  
-  .fab-calendar-icon {
-    font-size: 24px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin-bottom: 5px;
 }
-  
-  /* Hide the text for logged in users on mobile */
-  @media (max-width: 600px) {
-    .fab-logged-in .fab-text {
-      display: none;
-    }
-
-    .fab-avatar {
-      margin-right: -10px;
-      height: 50px;
-      width: 50px;
-      border-radius: 50%;
-      transition: 0.4s ease-in-out;
-    }
-
-    .fab-avatar:hover {
-      border-radius: 20%;
-      transition: all 0.4s ease-in-out;
-    }
-
-    .fab-container
-    {
-      height: 55px;
-      width: 55px;
-      border-radius: 50%;
-    }
-  }
-  

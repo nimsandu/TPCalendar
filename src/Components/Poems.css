@@ -367,3 +367,25 @@ body {
 .welcome-button i {
     font-size: 1.2rem;
 }
+.Poem-icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-bottom: -10px;
+    margin-top: -15px;
+    border-radius: 20%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    background-color: #33333383;
+    color: #b1b1b1;
+  }
+  
+  .Poem-icon-button:hover {
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(255, 251, 170, 0.576);
+  }

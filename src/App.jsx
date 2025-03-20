@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import AppFAB from "./Components/AppFAB";
 import FloatingActionButton from "./Components/FloatingActionButton"; // Keep this import
+import { Slide, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Import your sign-in, sign-up, profile pages
 import SignIn from "./Components/SignIn";
@@ -104,6 +106,7 @@ const App = () => {
             </nav>*/}
             <FloatingActionButton /> {/* Keep this for navigation */}
             <AppFAB /> {/* Keep this for update notifications */}
+            <ToastContainer position="bottom-right" autoClose={5000} transition={Slide} theme="dark" />
             <Routes>
                 {/* Root path ("/") -> Show calendar */}
                 <Route

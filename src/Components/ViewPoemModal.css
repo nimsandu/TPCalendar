@@ -253,3 +253,37 @@
   transition: ease-in-out 0.5s;
   width: 9px;
 }
+
+/* Add these styles to your existing ViewPoemModal.css file */
+
+.view-modal-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 130px;
+  padding-top: 15px;
+}
+
+.view-export-button {
+  background-color: #6a6a6a73;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.view-export-button:hover {
+  filter: brightness(1.1);
+  transform: scale(1.1);
+}
+
+.view-export-button:active {
+  transform: scale(0.98);
+}

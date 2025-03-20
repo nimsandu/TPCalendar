@@ -6,19 +6,21 @@ import { getAuth } from "firebase/auth";
 import DOMPurify from "dompurify";
 import "./PoemModal.css";
 import Loader from "./Loader";
+import { toast } from "react-toastify";
+import { Save, X, Plus, Bold, Italic, Underline, Loader as LoaderIcon, ArrowLeft, Trash2 } from "lucide-react";
 
 Modal.setAppElement("#root");
 
-const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'user' to props
+const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => {
     const [title, setTitle] = useState("");
     const [backstory, setBackstory] = useState("");
     const [showBackstory, setShowBackstory] = useState(false);
     const [color, setColor] = useState("#363636");
+    const [isSaving, setIsSaving] = useState(false);
+    const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
     const contentRef = useRef(null);
     const [loading, setLoading] = useState(false);
-
-    // const auth = getAuth(); // No need to initialize auth here if 'user' prop is passed
-    // const user = auth.currentUser; // 'user' is now received as a prop
+    const [hasChanges, setHasChanges] = useState(false);
 
     const colors = [
         "#363636", // Dark Gray
@@ -47,8 +49,21 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
             } else {
                 resetForm();
             }
+            setHasChanges(false);
         }
     }, [isOpen, poemToEdit]);
+
+    // Track changes
+    useEffect(() => {
+        if (isOpen) {
+            setHasChanges(true);
+        }
+    }, [title, backstory, color]);
+
+    // Also track content changes
+    const handleContentChange = () => {
+        setHasChanges(true);
+    };
 
     const resetForm = () => {
         setTitle("");
@@ -57,22 +72,39 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
         if (contentRef.current) {
             contentRef.current.innerHTML = "";
         }
+        setHasChanges(false);
     };
 
     const toggleFormat = (command) => {
         document.execCommand(command, false, null);
         contentRef.current.focus();
+        setHasChanges(true);
+    };
+
+    const handleCloseRequest = () => {
+        if (hasChanges && (title.trim() || contentRef.current?.innerHTML.trim() || backstory.trim())) {
+            setShowDiscardConfirm(true);
+        } else {
+            resetForm();
+            onClose();
+        }
+    };
+
+    const handleDiscard = () => {
+        setShowDiscardConfirm(false);
+        resetForm();
+        onClose();
     };
 
     const handleSave = async () => {
         if (!title.trim() || !contentRef.current.innerHTML.trim()) {
-            alert("Title and content cannot be empty!");
+            toast.error("Title and content cannot be empty!");
             return;
         }
 
         if (!user?.uid) {
             console.error("User not authenticated.");
-            alert("User not authenticated. Please log in again.");
+            toast.error("User not authenticated. Please log in again.");
             return;
         }
 
@@ -86,30 +118,31 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
         };
 
         setLoading(true);
+        setIsSaving(true);
 
         try {
             if (poemToEdit) {
-                await updateDoc(doc(db, "users", user.uid, "poems", poemToEdit.id), poemData); // Corrected path
+                await updateDoc(doc(db, "users", user.uid, "poems", poemToEdit.id), poemData);
+                toast.success("Poem updated successfully! Remember to periodically backup your poems for safekeeping.");
             } else {
-                await addDoc(collection(db, "users", user.uid, "poems"), poemData); // Corrected path
+                await addDoc(collection(db, "users", user.uid, "poems"), poemData);
+                toast.success("Poem saved successfully! Remember to periodically backup your poems for safekeeping.");
             }
             resetForm();
             onClose();
         } catch (error) {
             console.error("Error saving poem:", error);
-            alert("Error saving poem. Please try again.");
+            toast.error("Error saving poem. Please try again.");
         } finally {
             setLoading(false);
+            setIsSaving(false);
         }
     };
 
     return (
         <Modal
             isOpen={isOpen}
-            onRequestClose={() => {
-                resetForm();
-                onClose();
-            }}
+            onRequestClose={handleCloseRequest}
             className="poem-modal"
             overlayClassName="poem-modal-overlay"
             style={{
@@ -132,13 +165,13 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
 
                 <div className="formatting-toolbar">
                     <button className="format-button" onClick={() => toggleFormat("bold")}>
-                        <i className="fas fa-bold"></i>
+                        <Bold size={16} />
                     </button>
                     <button className="format-button" onClick={() => toggleFormat("italic")}>
-                        <i className="fas fa-italic"></i>
+                        <Italic size={16} />
                     </button>
                     <button className="format-button" onClick={() => toggleFormat("underline")}>
-                        <i className="fas fa-underline"></i>
+                        <Underline size={16} />
                     </button>
                 </div>
 
@@ -155,6 +188,7 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
                         whiteSpace: "pre-wrap",
                     }}
                     suppressContentEditableWarning
+                    onInput={handleContentChange}
                 />
 
                 {showBackstory ? (
@@ -166,7 +200,7 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
                     />
                 ) : (
                     <button className="add-backstory-button" onClick={() => setShowBackstory(true)}>
-                        <i className="fas fa-plus"></i> Add Backstory
+                        <Plus size={16} /> Add Backstory
                     </button>
                 )}
 
@@ -182,14 +216,38 @@ const PoemModal = ({ isOpen, onClose, poemToEdit, user }) => { // <--- Added 'us
                 </div>
 
                 <div className="modal-actions">
-                    <button className="cancel-button" onClick={onClose}>
-                        Cancel
+                    <button className="icon-button cancel-button" onClick={handleCloseRequest} title="Cancel" >
+                        <X size={20} />
                     </button>
-                    <button className="save-button" onClick={handleSave}>
-                        {poemToEdit ? "Update Poem" : "Save Poem"}
+                    <button className="icon-button save-button" onClick={handleSave} disabled={isSaving} title={poemToEdit ? "Update" : "Save"}>
+                        {isSaving ? (
+                            <LoaderIcon className="spinner" size={20} />
+                        ) : (
+                            <Save size={20} />
+                        )}
                     </button>
                 </div>
             </div>
+
+            {/* Discard Confirmation Dialog */}
+            {showDiscardConfirm && (
+                <div className="discard-confirm-overlay">
+                    <div className="discard-confirm-modal">
+                        <h3>Discard Changes?</h3>
+                        <p>You have unsaved changes that will be lost if you continue.</p>
+                        <div className="discard-actions">
+                            <button className="icon-button-text cancel-button" onClick={() => setShowDiscardConfirm(false)}>
+                                <ArrowLeft size={16} />
+                                <span>Keep Editing</span>
+                            </button>
+                            <button className="icon-button-text discard-button" onClick={handleDiscard}>
+                                <Trash2 size={16} />
+                                <span>Discard</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Modal>
     );
 };

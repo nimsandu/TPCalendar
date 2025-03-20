@@ -10,6 +10,7 @@ import DOMPurify from 'dompurify';
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileImport } from '@fortawesome/free-solid-svg-icons';
+import SharePoem from './SharePoem';
 
 
 const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal and onEditPoem
@@ -26,6 +27,20 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
     const poemListRef = useRef(null);
     const [poemsVisible, setPoemsVisible] = useState(10);
     const loadingMore = useRef(false);
+
+    const [showShareModal, setShowShareModal] = useState(false);
+  
+    // You should already have these states or similar for your ViewPoemModal
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [selectedPoem, setSelectedPoem] = useState(null);
+    const [authorData, setAuthorData] = useState(null);
+    
+    // Add this new function to handle opening the share modal
+    const handleOpenShareModal = (poem, author) => {
+      setSelectedPoem(poem);  // Use the same poem data
+      setAuthorData(author);  // Use the same author data
+      setShowShareModal(true); // Show the share modal
+    };
 
     useEffect(() => {
         if (!user?.uid) {
@@ -210,7 +225,7 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
                                 </div>
                                 <div className="actions-container">
                                     <button
-                                        className="icon-button"
+                                        className="Poem-icon-button"
                                         style={{ cursor: 'pointer' }}
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -221,7 +236,7 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
                                     </button>
 
                                     <button
-                                        className="icon-button"
+                                        className="Poem-icon-button"
                                         style={{ cursor: 'pointer' }}
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -232,7 +247,7 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
                                     </button>
 
                                     <button
-                                        className="icon-button"
+                                        className="Poem-icon-button"
                                         style={{ cursor: 'pointer' }}
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -253,7 +268,9 @@ const Poems = ({ user, onOpenModal, onEditPoem }) => { // Receive onOpenModal an
             </div>
 
             {/* PoemModal is now in Profile */}
-            <ViewPoemModal isOpen={isViewModalOpen} onClose={closeViewModal} poem={poemToView} authorData={loggedInUserData} />
+            <ViewPoemModal isOpen={isViewModalOpen} onClose={closeViewModal} poem={poemToView} authorData={loggedInUserData} onExport={handleOpenShareModal} />
+            <SharePoem isOpen={showShareModal} onClose={() => setShowShareModal(false)} poem={selectedPoem} authorData={authorData}
+      />
             <DeleteConfirmationModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={deletePoem} />
         </div>
     );

@@ -9,8 +9,28 @@ import "./FloatingActionButton.css";
 const FloatingActionButton = () => {
     const [user, setUser] = useState(null);
     const [userData, setUserData] = useState({ firstName: "", lastName: "", avatar: "" });
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Update current date every minute
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentDate(new Date());
+        }, 60000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // Monitor window width for responsive design
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -49,6 +69,26 @@ const FloatingActionButton = () => {
         }
     };
 
+    // Format date for display
+    const formatDate = () => {
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        
+        const day = currentDate.getDate();
+        const dayName = dayNames[currentDate.getDay()];
+        const month = monthNames[currentDate.getMonth()];
+        
+        return {
+            day,
+            dayName,
+            month,
+            fullDate: `${dayName}, ${month} ${day}`
+        };
+    };
+
+    const dateInfo = formatDate();
+    const isLandscape = windowWidth > 850;
+
     return (
         <div className="fab-container" onClick={handleClick}>
             {location.pathname === "/" ? (
@@ -72,7 +112,14 @@ const FloatingActionButton = () => {
                 )
             ) : (
                 <div className="fab-calendar">
-                    <span className="fab-calendar-icon" role="img" aria-label="calendar">📅</span>
+                    <div className="fab-date-display">
+                        <span className="fab-day-name">{dateInfo.dayName}</span>
+                        <span className="fab-day-number">{dateInfo.day}</span>
+                        <span className="fab-month">{dateInfo.month}</span>
+                    </div>
+                    {isLandscape && (
+                        <span className="fab-full-date">Return to Calendar</span>
+                    )}
                 </div>
             )}
         </div>

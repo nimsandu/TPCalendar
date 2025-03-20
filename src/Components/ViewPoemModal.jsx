@@ -5,11 +5,11 @@ import DOMPurify from "dompurify";
 import defaultAvatar from "../images/avatar.png";
 import "./ViewPoemModal.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { faFileImport, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 
 Modal.setAppElement("#root");
 
-const ViewPoemModal = ({ isOpen, onClose, poem, authorData }) => { // Receive authorData prop
+const ViewPoemModal = ({ isOpen, onClose, poem, authorData, onExport }) => { // Added onExport prop
     const [modalIsOpen, setModalIsOpen] = useState(isOpen);
     const [formattedDate, setFormattedDate] = useState("");
     const modalRef = useRef(null);
@@ -50,6 +50,12 @@ const ViewPoemModal = ({ isOpen, onClose, poem, authorData }) => { // Receive au
             console.error("Error formatting timestamp:", error);
             setFormattedDate("Invalid date");
         }
+    };
+
+    // New function to handle the export button click
+    const handleExportClick = () => {
+        onClose(); // Close the view modal
+        onExport(poem, authorData); // Open the share modal
     };
 
     if (!poem) return null;
@@ -130,8 +136,14 @@ const ViewPoemModal = ({ isOpen, onClose, poem, authorData }) => { // Receive au
                     )}
                 </div>
 
+                {/* Added export button in the actions div */}
                 <div className="view-modal-actions">
-                    {/* Actions can be added here if needed */}
+                    <button 
+                        className="view-export-button" 
+                        onClick={handleExportClick}
+                    >
+                        <FontAwesomeIcon icon={faShareAlt} />
+                    </button>
                 </div>
             </div>
         </Modal>

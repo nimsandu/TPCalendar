@@ -1,20 +1,20 @@
 [
     {
-        "version": "0.0.1",
+        "version": "0.1.0",
         "releaseDate": "2025-02-11",
         "notes": [
           "Fist Alpha Prototype (J1)."
         ]
       },
     {
-      "version": "0.0.3",
+      "version": "0.3.0",
       "releaseDate": "2025-02-21",
       "notes": [
         "Vercel based PWA Prototype (J2)."
       ]
     },
     {
-      "version": "0.0.4",
+      "version": "0.4.0",
       "releaseDate": "2025-02-23",
       "notes": [
         "Final Prototype (J3)",
@@ -30,14 +30,14 @@
       ]
     },
     {
-      "version": "0.0.5",
+      "version": "0.5.0",
       "releaseDate": "2025-03-05",
       "notes": [
         "Updated TodaysOverview styling."
       ]
     },
     {
-      "version": "0.0.7",
+      "version": "0.7.0",
       "releaseDate": "2025-03-10",
       "notes": [
         "Initial steps for backend integration.",
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "version": "0.1.0",
+      "version": "0.8.0",
       "releaseDate": "2025-03-13",
       "notes": [
         "The Poets Calendar First Beta release.",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "version": "0.1.4",
+      "version": "0.8.4",
       "releaseDate": "2025-03-14",
       "notes": [
         "Performance improvements.",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "version": "0.1.6",
+      "version": "0.8.5",
       "releaseDate": "2025-03-17",
       "notes": [
         "Bug fixes for content editable and calendar toggle.",
@@ -77,15 +77,20 @@
       ]
     },
     {
-      "version": "0.1.7",
+      "version": "0.8.7",
       "releaseDate": "2025-03-18",
       "notes": [
-        "Bug fixes for content editable and calendar toggle.",
-        "Fixed card click issue.",
-        "More bug fixes.",
-        "Bug fix related to Vercel deployment.",
-        "Completed restructuring of databases and security (including backup functionality).",
-        "Updated SignUp component."
+        "Update and Navigation system PrototypeALFA",
+        "Notice Systems ProtoDELTA"
+      ]
+    },
+    {
+      "version": "0.9.0",
+      "releaseDate": "2025-03-20",
+      "notes": [
+        "Today Button ProtoALFA",
+        "Share and export as png System ProtoALFA"
       ]
     }
+    
   ]
