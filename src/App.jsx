@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import AppFAB from "./Components/AppFAB";
 import FloatingActionButton from "./Components/FloatingActionButton"; // Keep this import
 import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Import your sign-in, sign-up, profile pages
+// Import your existing Loader component
+import Loader from "./Components/Loader";
+
+// Regular imports for frequently used components
 import SignIn from "./Components/SignIn";
-import SignUp from "./Components/SignUp";
 import Profile from "./Components/Profile";
-import ForgotPassword from "./Components/ForgotPassword";
-import ChangePassword from "./Components/ChangePassword";
-import EditProfile from "./Components/EditProfile";
-// import FloatingActionButton from "./Components/FloatingActionButton"; // Already imported above
-import Backup from "./Components/Backup"; // Import the Backup component
+
+// Lazy load components that aren't needed for initial render
+const SignUp = lazy(() => import("./Components/SignUp"));
+const ForgotPassword = lazy(() => import("./Components/ForgotPassword"));
+const ChangePassword = lazy(() => import("./Components/ChangePassword"));
+const EditProfile = lazy(() => import("./Components/EditProfile"));
+const Backup = lazy(() => import("./Components/Backup"));
 
 // Import your calendar stuff
 import CalendarApp from "./Components/CalendarApp";
@@ -35,7 +39,7 @@ import novImg from "./images/nov_mob.jpeg";
 import decImg from "./images/dec_mob.jpeg";
 
 // Import a default background image
-import defaultBg from "./images/bg3.jpg";
+import defaultBg from "./images/bg2.gif";
 
 const App = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -96,14 +100,6 @@ const App = () => {
 
     return (
         <Router>
-            {/* Basic navbar for links
-            <nav style={{ margin: "1rem" }}>
-                <Link to="/">Home</Link> |{" "}
-                <Link to="/signin">Sign In</Link> |{" "}
-                <Link to="/signup">Sign Up</Link> |{" "}
-                <Link to="/profile">Profile</Link> |{" "}
-                <Link to="/backup">Backup</Link>
-            </nav>*/}
             <FloatingActionButton /> {/* Keep this for navigation */}
             <AppFAB /> {/* Keep this for update notifications */}
             <ToastContainer position="bottom-right" autoClose={5000} transition={Slide} theme="dark" />
@@ -133,15 +129,42 @@ const App = () => {
                     }
                 />
 
-                {/* Sign In */}
+                {/* Sign In - not lazy loaded as it's frequently accessed */}
                 <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
+                
+                {/* Lazy loaded routes with your custom Loader component */}
+                <Route path="/signup" element={
+                    <Suspense fallback={<Loader />}>
+                        <SignUp />
+                    </Suspense>
+                } />
+                
+                <Route path="/forgot-password" element={
+                    <Suspense fallback={<Loader />}>
+                        <ForgotPassword />
+                    </Suspense>
+                } />
+                
+                {/* Profile is kept as regular import as it might be frequently accessed */}
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/change-password" element={<ChangePassword />} />
-                <Route path="/edit-profile" element={<EditProfile />} />
-                {/* Add the new route for Backup */}
-                <Route path="/backup" element={<Backup />} />
+                
+                <Route path="/change-password" element={
+                    <Suspense fallback={<Loader />}>
+                        <ChangePassword />
+                    </Suspense>
+                } />
+                
+                <Route path="/edit-profile" element={
+                    <Suspense fallback={<Loader />}>
+                        <EditProfile />
+                    </Suspense>
+                } />
+                
+                <Route path="/backup" element={
+                    <Suspense fallback={<Loader />}>
+                        <Backup />
+                    </Suspense>
+                } />
             </Routes>
         </Router>
     );

@@ -6,28 +6,39 @@ import DOMPurify from "dompurify";
 import "./SharePoem.css";
 import defaultAvatar from "../images/avatar.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faPalette, faAlignLeft, faAlignCenter, faAlignRight, faFont, faDownload, faTimes, faEdit, faSave, faRedo, faTextHeight, faSlash, faAdjust, faEye, faChevronDown, faChevronUp, faEyeSlash, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faImage, faPalette, faAlignLeft, faAlignCenter, faAlignRight, faFont, faDownload, faTimes, faEdit, faSave, faRedo, faTextHeight, faSlash, faAdjust, faEye, faChevronDown, faChevronUp, faEyeSlash, faUserCircle, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 Modal.setAppElement("#root");
 
 const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
-    // Initialize state with defaults and add useEffect to update when props change
-    const [backgroundColor, setBackgroundColor] = useState("#2a2a2a");
+    // Initial default values
+    const defaultBackgroundColor = "#2a2a2a";
+    const defaultTextColor = "#ffffff";
+    const defaultTitleSize = "medium";
+    const defaultContentSize = "medium";
+    const defaultTextAlign = "left";
+    const defaultFontType = "standard";
+    const defaultAspectRatio = "1:1";
+    const defaultOverlay = "none";
+    const defaultShowAuthorInfo = true;
+    
+    // Initialize state
+    const [backgroundColor, setBackgroundColor] = useState(defaultBackgroundColor);
     const [backgroundImage, setBackgroundImage] = useState(null);
-    const [titleSize, setTitleSize] = useState("medium");
-    const [contentSize, setContentSize] = useState("medium");
-    const [textAlign, setTextAlign] = useState("left");
-    const [fontType, setFontType] = useState("standard");
+    const [titleSize, setTitleSize] = useState(defaultTitleSize);
+    const [contentSize, setContentSize] = useState(defaultContentSize);
+    const [textAlign, setTextAlign] = useState(defaultTextAlign);
+    const [fontType, setFontType] = useState(defaultFontType);
     const [showColorPicker, setShowColorPicker] = useState(false);
     const [showTextColorPicker, setShowTextColorPicker] = useState(false);
-    const [textColor, setTextColor] = useState("#ffffff");
+    const [textColor, setTextColor] = useState(defaultTextColor);
     const [exportLoading, setExportLoading] = useState(false);
     const [titleText, setTitleText] = useState("");
     const [contentText, setContentText] = useState("");
     const [isEditMode, setIsEditMode] = useState(false);
-    const [aspectRatio, setAspectRatio] = useState("1:1");
-    const [overlay, setOverlay] = useState("none");
-    const [showAuthorInfo, setShowAuthorInfo] = useState(true);
+    const [aspectRatio, setAspectRatio] = useState(defaultAspectRatio);
+    const [overlay, setOverlay] = useState(defaultOverlay);
+    const [showAuthorInfo, setShowAuthorInfo] = useState(defaultShowAuthorInfo);
     // Collapsible sections state
     const [textOptionsCollapsed, setTextOptionsCollapsed] = useState(false);
     const [backgroundOptionsCollapsed, setBackgroundOptionsCollapsed] = useState(false);
@@ -49,6 +60,48 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
             }
         }
     }, [poem]);
+    
+    // Reset all settings when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            // Reset everything to default on close
+            resetAllSettings();
+        }
+    }, [isOpen]);
+    
+    // Function to reset all settings to default
+    const resetAllSettings = () => {
+        setBackgroundColor(poem?.color || defaultBackgroundColor);
+        setBackgroundImage(null);
+        setTitleSize(defaultTitleSize);
+        setContentSize(defaultContentSize);
+        setTextAlign(defaultTextAlign);
+        setFontType(defaultFontType);
+        setTextColor(defaultTextColor);
+        setIsEditMode(false);
+        setAspectRatio(defaultAspectRatio);
+        setOverlay(defaultOverlay);
+        setShowAuthorInfo(defaultShowAuthorInfo);
+        setShowColorPicker(false);
+        setShowTextColorPicker(false);
+        
+        // Reset text to original poem content
+        if (poem) {
+            setTitleText(poem.title || "");
+            if (poem.content) {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = DOMPurify.sanitize(poem.content);
+                setContentText(tempDiv.textContent || tempDiv.innerText || "");
+            } else {
+                setContentText("");
+            }
+        }
+    };
+
+    // Function to remove background image
+    const removeBackgroundImage = () => {
+        setBackgroundImage(null);
+    };
     
     const displayRef = useRef(null);
     const modalRef = useRef(null);
@@ -164,7 +217,7 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
             clonedDisplay.style.boxSizing = 'border-box';
             clonedDisplay.style.backgroundColor = backgroundImage ? 'transparent' : backgroundColor;
             clonedDisplay.style.color = textColor;
-            clonedDisplay.className = `share-poem-display ${getTitleSizeClass()} ${getContentSizeClass()} ${getFontClass()} text-${textAlign}`;
+            clonedDisplay.className = `share-poem-display ${getTitleSizeClass()} ${getContentSizeClass()} text-${textAlign}`;
 
             // Fix all internal element styles
             const clonedTitle = clonedDisplay.querySelector('.share-poem-title');
@@ -219,7 +272,7 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                     case "small": clonedTitle.style.fontSize = "28px"; break;
                     case "medium": clonedTitle.style.fontSize = "36px"; break;
                     case "large": clonedTitle.style.fontSize = "44px"; break;
-                    case "x-large": clonedTitle.style.fontSize = "52px"; break;
+                    case "x-large": clonedTitle.style.fontSize = "50px"; break;
                     default: clonedTitle.style.fontSize = "36px";
                 }
             }
@@ -235,7 +288,7 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                         case "small": return "22px";
                         case "medium": return "25px";
                         case "large": return "27px";
-                        case "x-large": return "32px";
+                        case "x-large": return "38px";
                         default: return "25px";
                     }
                 })();
@@ -257,12 +310,9 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                 clonedFooter.style.marginRight = 'auto';
             }
 
-            // Apply font family based on selection
-            if (fontType === 'handwriting') {
-                clonedDisplay.style.fontFamily = '"Dancing Script", cursive, sans-serif';
-            } else {
+          
                 clonedDisplay.style.fontFamily = '"Roboto", "Helvetica Neue", sans-serif';
-            }
+
 
             // Apply text alignment
             clonedDisplay.style.textAlign = textAlign;
@@ -325,9 +375,6 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
         }
     };
 
-    const getFontClass = () => {
-        return fontType === "handwriting" ? "font-handwriting" : "font-standard";
-    };
 
     const toggleEditMode = () => {
         setIsEditMode(!isEditMode);
@@ -363,17 +410,22 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
         }
     };
     
+    // Custom function for modal close to ensure state is reset
+    const handleModalClose = () => {
+        onClose();
+    };
+    
     return (
         <Modal
             isOpen={isOpen}
-            onRequestClose={onClose}
+            onRequestClose={handleModalClose}
             className="share-modal"
             overlayClassName="share-overlay"
         >
             <div className="share-modal-container" ref={modalRef}>
                 <div className="share-modal-header">
                     <h2>Export Poem as Image</h2>
-                    <button className="share-close-button" onClick={onClose}>
+                    <button className="share-close-button" onClick={handleModalClose}>
                         <FontAwesomeIcon icon={faTimes} />
                     </button>
                 </div>
@@ -385,7 +437,7 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                             <div className="preview-area">
                                 <div 
                                     ref={displayRef} 
-                                    className={`share-poem-display ${getTitleSizeClass()} ${getContentSizeClass()} ${getFontClass()} text-${textAlign}`}
+                                    className={`share-poem-display ${getTitleSizeClass()} ${getContentSizeClass()} text-${textAlign}`}
                                     style={{
                                         backgroundColor: backgroundImage ? 'transparent' : backgroundColor,
                                         color: textColor,
@@ -453,6 +505,9 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                                 </div>
                             </div>
                         </div>
+                        <div className="preview-disclaimer">
+                            <p>Note: The exported image may differ slightly from this preview</p>
+                        </div>
                     </div>
                     
                     <div className="controls-area">
@@ -483,23 +538,6 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                                         )}
                                     </div>
                                     
-                                    <div className="control-group">
-                                        <label>Font Style</label>
-                                        <div className="button-group">
-                                            <button 
-                                                className={fontType === 'standard' ? 'active' : ''} 
-                                                onClick={() => setFontType('standard')}
-                                            >
-                                                Standard
-                                            </button>
-                                            <button 
-                                                className={fontType === 'handwriting' ? 'active' : ''} 
-                                                onClick={() => setFontType('handwriting')}
-                                            >
-                                                Handwriting
-                                            </button>
-                                        </div>
-                                    </div>
                                     
                                     <div className="control-group">
                                         <label>Text Color</label>
@@ -641,12 +679,14 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                                         <button 
                                             className="control-button color-button"
                                             onClick={() => setShowColorPicker(!showColorPicker)}
+                                            disabled={!!backgroundImage}
+                                            style={{ opacity: backgroundImage ? 0.5 : 1 }}
                                         >
                                             <FontAwesomeIcon icon={faPalette} /> Choose Background Color
                                             <span className="color-preview" style={{ backgroundColor }}></span>
                                         </button>
                                         
-                                        {showColorPicker && (
+                                        {showColorPicker && !backgroundImage && (
                                             <div className="color-picker-popover">
                                                 <div 
                                                     className="color-picker-cover" 
@@ -667,17 +707,28 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                                     </div>
                                     
                                     <div className="control-group">
-                                        <label htmlFor="image-upload" className="control-button">
-                                            <FontAwesomeIcon icon={faImage} /> Upload Background Image
-                                        </label>
-                                        <input 
-                                            id="image-upload" 
-                                            type="file" 
-                                            accept="image/*" 
-                                            onChange={handleImageUpload}
-                                            style={{ display: 'none' }}
-                                            ref={fileInputRef}
-                                        />
+                                    {backgroundImage ? (
+                                        <button 
+                                            className="control-button remove-image-button"
+                                            onClick={removeBackgroundImage}
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} /> Remove Background Image
+                                        </button>
+                                    ) : (
+                                        <>
+                                            <label htmlFor="image-upload" className="control-button">
+                                                <FontAwesomeIcon icon={faImage} /> Upload Background Image
+                                            </label>
+                                            <input 
+                                                id="image-upload" 
+                                                type="file" 
+                                                accept="image/*" 
+                                                onChange={handleImageUpload}
+                                                style={{ display: 'none' }}
+                                                ref={fileInputRef}
+                                            />
+                                        </>
+                                    )}
                                         
                                         {backgroundImage && (
                                             <>
@@ -746,7 +797,7 @@ const SharePoem = ({ isOpen, onClose, poem, authorData }) => {
                         <FontAwesomeIcon icon={faDownload} />
                         {exportLoading ? (
                             <>
-                                <span className="loading-indicator"></span> Generating...
+                                <span className="loading-spin-indicator"></span> Generating...
                             </>
                         ) : 'Save as Image'}
                     </button>

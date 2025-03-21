@@ -49,11 +49,10 @@
   }
   
   .app-fab:hover {
-    transform: scale(1.05);
+
     box-shadow: 0 0px 28px rgb(255, 255, 255);
-    background-color: #2929296e;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: #ffffff;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .app-fab.active {
@@ -72,7 +71,7 @@
   .fab-icon {
     color: white;
     font-size: 24px;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 14;
   }
   
@@ -81,6 +80,17 @@
     position: absolute;
     right: 15px;
     top: 15px;
+  }
+  .custom-icon {
+    width: 55px; /* Adjust size as needed */
+    height: 55px; /* Adjust size as needed */
+    object-fit: contain;
+    transition: all 0.4s ease-in-out;
+  }
+
+  .custom-icon:hover {
+    filter: invert();
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   /* Glass effect backdrop */

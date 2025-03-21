@@ -91,6 +91,17 @@
         "Today Button ProtoALFA",
         "Share and export as png System ProtoALFA"
       ]
+    },
+    {
+      "version": "0.9.3",
+      "releaseDate": "2025-03-22",
+      "notes": [
+        "Fixes to export system",
+        "New app Icons",
+        "Security assesment",
+        "splash screen added",
+        "other improvements"
+      ]
     }
     
   ]

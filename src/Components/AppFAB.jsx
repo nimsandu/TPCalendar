@@ -6,6 +6,7 @@ import './AppMenu.css';
 import './Modal.css';
 import { db } from '../auth/firebaseConfig';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import tpcIcon from '../images/tpcicon.png';
 
 // Import icons
 import { 
@@ -319,7 +320,7 @@ const AppFAB = () => {
         >
           {updateInfo.available ? <div className="notification-dot red-dot" /> : null}
           {hasNewNotices ? <div className="notification-dot yellow-dot" /> : null}
-          {showAppMenu ? <FiX className="fab-icon" /> : <FiMenu className="fab-icon" />}
+          {showAppMenu ? <FiX className="fab-icon" /> : <img src={tpcIcon} alt="Menu" className="fab-icon custom-icon" />}
         </button>
         
         {/* Menu moved outside of button */}

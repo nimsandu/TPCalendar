@@ -18,6 +18,7 @@ import defaultAvatar from '../images/avatar.png';
 import './Backup.css';
 import Loader from './Loader';
 import CustomModal from '../Components/CustomModal'; // Assuming you have a custom modal component
+import bgImage from "../images/bgb.gif";
 
 const Backup = () => {
     const [user, setUser] = useState(null);
@@ -41,6 +42,7 @@ const Backup = () => {
     const [downloading, setDownloading] = useState(false);
     const [restoring, setRestoring] = useState(false);
     const [showBackupWarning, setShowBackupWarning] = useState(false); // State for backup warning modal
+    const backgroundStyle = {backgroundImage: `url(${bgImage})`};
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
@@ -296,7 +298,7 @@ const Backup = () => {
     }
 
     return (
-        <div className="backup-page">
+        <div className="backup-page" style={backgroundStyle}>
             {isPasswordModalOpen && (
                 <div className="password-modal-overlay centered-modal">
                     <div className="password-modal">

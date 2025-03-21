@@ -4,6 +4,8 @@ import Modal from "react-modal";
 import "./ChangePassword.css";
 import Loader from "./Loader";
 import { useNavigate } from "react-router-dom";
+// Import background image
+import bgImage from "../images/bg3.jpg";
 
 Modal.setAppElement("#root");
 
@@ -21,6 +23,11 @@ const ChangePassword = () => {
     const [errorMessage, setErrorMessage] = useState(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
+
+    // Only setting background image in JSX, rest stays in CSS
+    const backgroundStyle = {
+        backgroundImage: `url(${bgImage})`
+    };
 
     const handleChangePassword = async () => {
         setLoading(true);
@@ -96,13 +103,13 @@ const ChangePassword = () => {
     };
 
     return (
-        <div className="change-password-page">
+        <div className="change-password-page" style={backgroundStyle}>
             <div className="change-password-card">
                 {loading && <Loader />}
-                <button className="modern-back-button" onClick={handleBack}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6" />
-                </svg>
+                <button className="responsive-back-button" onClick={handleBack}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
                 </button>
                 <h2 className="card-title">Change Password</h2>
                 <input

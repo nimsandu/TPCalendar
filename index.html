@@ -3,16 +3,93 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/pwa-icon-192x192.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <meta name="theme-color" content="#323232">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-startup-image" href="/apple-icon-180.png">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel='stylesheet'>
     <title>The Poet's Calendar</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000000;
+      }
+      
+      #splash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #000000;
+        z-index: 9999;
+      }
+
+      #splash img {
+        width: 100px;
+        height: 100px;
+      }
+
+      #splash h1 {
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        position: fixed;
+        bottom: 10%;
+      }
+      #splash p {
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        position: fixed;
+        bottom: 8%;
+      }
+
+      #root {
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+      }
+    </style>
   </head>
   <body>
+    <div id="splash">
+      <img src="/src/images/tpcicon.svg" alt="The Poet's Calendar">
+      <h1>The Poet's Calendar</h1>
+      <p>V0.9.1</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Hide splash screen and show content when app is loaded
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const splash = document.getElementById('splash');
+          const root = document.getElementById('root');
+          
+          // Make the root visible
+          root.style.opacity = '1';
+          
+          // Hide the splash screen
+          splash.style.opacity = '0';
+          splash.style.transition = 'opacity 0.5s ease-out';
+          
+          // Remove the splash from DOM after transition
+          setTimeout(() => {
+            splash.style.display = 'none';
+          }, 500);
+        }, 2000); // Show splash for 1 second, adjust as needed
+      });
+    </script>
   </body>
 </html>
